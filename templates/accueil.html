@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouv'Sport - Mercato Martinique</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="brand">
+            <a href="/"><h1>Mouv'Sport</h1></a>
+        </div>
+
+        <div class="sports-nav">
+            {% for sport in sports %}
+                <span class="sport-badge">{{ sport[1] }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="auth-buttons">
+            <a href="/login"><button class="btn btn-login">Connexion</button></a>
+            <a href="/register"><button class="btn btn-register">Créer un compte</button></a>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <div class="section-header">
+            <h2>Dernières Transactions</h2>
+            <p>Toutes les mutations officielles de la ligue en temps réel.</p>
+        </div>
+
+        <div class="table-wrapper">
+            <div class="responsive-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Joueur</th>
+                            <th>Club Départ</th>
+                            <th>Club Arrivée</th>
+                            <th>Solidarité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in mutations %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ m[1] }}</td>
+                            
+                            <td>{{ m[2] }}</td>
+                            
+                            <td class="club-name">{{ m[3] }}</td>
+                            
+                            <td><span class="price-tag">{{ m[4] }} €</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                Le mercato est calme... Aucune mutation récente.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

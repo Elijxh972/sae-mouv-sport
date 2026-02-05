@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Espace Club - Mouv'Sport</title>
+    <style>
+        /* --- CHARTE GRAPHIQUE MOUV'SPORT MARTINIQUE --- */
+
+        :root {
+            /* PALETTE DE COULEURS */
+            --primary-blue: #0B4D00;      /* Bleu Abysse */
+            --accent-orange: #FF5722;     /* Orange Flamboyant */
+            --secondary-teal: #00BCD4;    /* Turquoise Lagon */
+            --bg-light: #8BFF95;          /* Blanc Écume */
+            --text-dark: #2C3E50;         /* Gris Anthracite (Texte) */
+            --text-grey: #6c757d;         /* Gris moyen */
+            
+            /* ETATS */
+            --success: #2ECC71;
+            --danger: #E74C3C;
+            --warning: #F1C40F;
+
+            /* FORMES */
+            --radius-box: 12px;
+            --radius-btn: 8px;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* BASE */
+        body {
+            font-family: 'Inter', 'Roboto', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        a { text-decoration: none; transition: 0.3s; }
+
+        /* COMPOSANTS : CARTES (Box) */
+        .card, .box, .login-box, .score-box {
+            background: white;
+            border-radius: var(--radius-box);
+            box-shadow: var(--shadow-soft);
+            padding: 25px;
+            margin-bottom: 20px;
+            border: none; /* Pas de bordure noire */
+        }
+
+        /* COMPOSANTS : BOUTONS */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: var(--radius-btn);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            color: white;
+        }
+
+        .btn-primary, .btn-action, .btn-offre {
+            background: linear-gradient(135deg, var(--accent-orange), #FF8A65); /* Dégradé Flamboyant */
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px); /* Petit effet de levier */
+            box-shadow: 0 4px 8px rgba(255, 87, 34, 0.4);
+        }
+
+        .btn-secondary, .btn-retour {
+            background-color: white;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .btn-valider { background-color: var(--success); color: white; }
+        .btn-refuser, .btn-logout { background-color: var(--danger); color: white; }
+
+        /* NAVIGATION */
+        .navbar, .header {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--radius-box);
+        }
+
+        .navbar h1, .header h1 { color: white; margin: 0; font-size: 1.5rem; }
+
+        /* TABLEAUX MODERNES */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: var(--radius-box);
+            overflow: hidden; /* Pour garder les coins ronds */
+            box-shadow: var(--shadow-soft);
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #f1f7ff; } /* Survol bleu très pâle */
+
+        /* INPUTS FORMULAIRES */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-btn);
+            background-color: #fafafa;
+            font-size: 1rem;
+            box-sizing: border-box; /* Important pour les marges */
+        }
+
+        input:focus, select:focus {
+            border-color: var(--secondary-teal);
+            outline: none;
+            background-color: white;
+        }
+
+        /* Specific for club */
+        .score-box { background: linear-gradient(135deg, var(--secondary-teal), #80DEEA); color: white; border-left: 5px solid var(--primary-blue); }
+        .score-box h3 { color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bienvenue, {{ club[1] }}</h1>
+        <a href="/logout" class="btn btn-logout">Déconnexion</a>
+    </div>
+
+    <div class="score-box">
+        <h3>Votre Réputation</h3>
+        <p><strong>Score de Confiance :</strong> {{ club[3] }} / 100 pts</p>
+        <p><strong>Statut Financier :</strong> {{ club[4] }}</p>
+        <p><em>Un score élevé accélère vos démarches administratives.</em></p>
+    </div>
+
+    <h2>Gestion de l'Effectif</h2>
+    <p>Voici les joueurs actuellement sous contrat avec votre club :</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Poste</th>
+                <th>Note Fairplay</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for j in joueurs %}
+            <tr>
+                <td>{{ j[1] }}</td>
+                <td>{{ j[2] }}</td>
+                <td>{{ j[4] }}</td>
+                <td>{{ j[5] }}/10</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Aucun joueur enregistré pour le moment.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    <a href="/mercato" class="btn btn-action">+ Initier une demande de transfert</a>
+    <a href="/" style="margin-left: 20px;">Retour à l'accueil public</a>
+
+</body>
+</html>

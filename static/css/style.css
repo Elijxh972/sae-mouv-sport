@@ -1,0 +1,296 @@
+/* ==========================================================================
+   MOUV'SPORT 972 - FEUILLE DE STYLE PRINCIPALE
+   Thème : "Lagon & Volcan" (Moderne, Tropical, Sportif)
+   ========================================================================== */
+
+/* --- 1. CONFIGURATION & VARIABLES --- */
+:root {
+    /* PALETTE DE COULEURS */
+    --ocean-blue: #004e92;       /* Bleu profond (Header, Titres) */
+    --lagoon-teal: #00b4db;      /* Turquoise (Dégradés, Accents) */
+    --spicy-orange: #ff6f00;     /* Orange Madras (Boutons d'action) */
+    --sunset-red: #ff3d00;       /* Rouge vif (Alertes, Live) */
+    --nature-green: #2ecc71;     /* Vert (Prix, Validation) */
+    
+    /* NEUTRES */
+    --sand-bg: #f8f9fa;          /* Gris très pâle (Fond de page) */
+    --pure-white: #ffffff;
+    --text-dark: #1a2a3a;        /* Bleu nuit très sombre (Texte principal) */
+    --text-grey: #6c757d;        /* Gris moyen (Textes secondaires) */
+
+    /* DESIGN SYSTEM */
+    --radius-s: 8px;
+    --radius-m: 12px;
+    --radius-l: 20px;
+    --shadow-soft: 0 8px 24px rgba(0, 78, 146, 0.08); /* Ombre bleutée légère */
+    --shadow-hover: 0 12px 30px rgba(0, 78, 146, 0.15);
+    --header-height: 70px;
+    
+    /* TRANSITIONS */
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* --- 2. RESET & BASE --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--sand-bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+    padding-top: var(--header-height); /* Pour compenser le menu fixe */
+}
+
+/* Titres avec la police Montserrat pour le côté "Sport/Marque" */
+h1, h2, h3, h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--ocean-blue);
+    letter-spacing: -0.5px;
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* --- 3. NAVBAR (Menu) --- */
+.navbar {
+    background: var(--ocean-blue);
+    /* Petit dégradé subtil rappelant la mer */
+    background: linear-gradient(90deg, #003366 0%, #004e92 100%);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px); /* Effet verre dépoli si on ajoute de la transparence */
+}
+
+.brand h1 {
+    color: var(--pure-white);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    font-style: italic; /* Donne du mouvement */
+}
+
+/* Badge Sport dans le menu */
+.sports-nav {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 5px;
+    scrollbar-width: none; /* Cache la barre de scroll */
+}
+
+.sport-badge {
+    color: var(--pure-white);
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: var(--transition-fast);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.sport-badge:hover {
+    background: var(--pure-white);
+    color: var(--ocean-blue);
+    transform: translateY(-2px);
+}
+
+/* --- 4. BOUTONS --- */
+.auth-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    padding: 10px 22px;
+    border-radius: var(--radius-s);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-fast);
+    text-align: center;
+}
+
+/* Bouton Connexion (Transparent) */
+.btn-login {
+    background: transparent;
+    color: var(--pure-white);
+    border: 1px solid rgba(255,255,255,0.4);
+}
+.btn-login:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--pure-white);
+}
+
+/* Bouton Inscription (Orange Madras - Action principale) */
+.btn-register {
+    background: var(--spicy-orange);
+    color: var(--pure-white);
+    box-shadow: 0 4px 10px rgba(255, 111, 0, 0.3);
+}
+.btn-register:hover {
+    background: #e65100;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
+}
+
+/* --- 5. LAYOUT & CONTENU --- */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    animation: fadeIn 0.6s ease-out; /* Petite animation d'arrivée */
+}
+
+.section-header {
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header h2::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 30px;
+    background: var(--spicy-orange); /* Barre orange à gauche du titre */
+    border-radius: 4px;
+}
+
+.section-header p {
+    color: var(--text-grey);
+    margin-left: 16px;
+}
+
+/* --- 6. TABLEAU DES TRANSFERTS (Carte) --- */
+.table-wrapper {
+    background: var(--pure-white);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden; /* Important pour les coins arrondis */
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.responsive-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iPhone */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px; /* Force le scroll horizontal sur petit écran */
+}
+
+thead {
+    background-color: #f1f5f9;
+}
+
+th {
+    padding: 18px 25px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--ocean-blue);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+td {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--text-dark);
+}
+
+tr { transition: background-color 0.2s; }
+tr:last-child td { border-bottom: none; }
+
+/* Effet au survol d'une ligne */
+tr:hover {
+    background-color: #f8fbff;
+}
+
+/* Style spécifique pour les données */
+td:first-child {
+    font-weight: 600;
+    color: var(--ocean-blue); /* Nom du joueur en bleu */
+}
+
+.club-name { font-weight: 500; }
+
+.price-tag {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: rgba(46, 204, 113, 0.1); /* Fond vert très clair */
+    color: var(--nature-green); /* Texte vert */
+    font-weight: 700;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* État vide */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-grey);
+}
+
+/* --- 7. ANIMATIONS --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 8. RESPONSIVE (Mobile) --- */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    body { padding-top: 150px; } /* Plus d'espace car le header est plus haut */
+
+    .brand h1 { font-size: 1.2rem; }
+
+    .auth-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn {
+        flex: 1; /* Les boutons prennent toute la largeur */
+        padding: 12px;
+    }
+
+    .container { margin-top: 20px; }
+    
+    th, td { padding: 15px; } /* Moins d'espace dans le tableau */
+}
