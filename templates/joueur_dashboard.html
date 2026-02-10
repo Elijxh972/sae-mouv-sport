@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Joueur - Mouv'Sport</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="brand">
+            <a href="/" class="brand-link">
+                <img src="{{ url_for('static', path='img/logo.png') }}" alt="Logo Mouv'Sport" class="logo-img">
+                <h1>Mouv'Sport</h1>
+            </a>
+        </div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span style="color:white; font-weight:500;">👤 {{ login }}</span>
+            <a href="/logout"><button class="btn btn-logout" style="padding:8px 15px; font-size:0.85rem;">Déconnexion</button></a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="card" style="margin-top:20px;">
+            <h2>Mon profil joueur</h2>
+            <p><strong>Sport :</strong> {{ sport }}</p>
+            <p><strong>Club actuel :</strong> {{ nom_club }}</p>
+            <p style="font-size:0.9rem; color:var(--text-grey);">
+                Si tu viens de créer ton compte, ton club doit d’abord valider ta demande
+                avant que tu sois officiellement rattaché à l’effectif.
+            </p>
+        </div>
+
+        <div class="card" style="border-left:4px solid var(--ocean-blue);">
+            <h3>Suivi de mon avenir sportif</h3>
+            <p style="font-size:0.95rem;">
+                Ici tu pourras à terme retrouver :
+            </p>
+            <ul style="margin-top:5px; padding-left:20px; font-size:0.9rem; color:var(--text-grey);">
+                <li>l’état de tes demandes de mutation,</li>
+                <li>les clubs intéressés par ton profil,</li>
+                <li>et ton historique de mouvements.</li>
+            </ul>
+            <p style="margin-top:10px; font-size:0.9rem;">
+                Pour l’instant, cette zone est surtout là pour valider le parcours joueur et la connexion.
+            </p>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a href="/" class="btn btn-secondary">Retour à l'accueil public</a>
+        </div>
+
+    </main>
+
+</body>
+</html>
+

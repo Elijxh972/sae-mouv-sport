@@ -3,199 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <title>Espace Club - Mouv'Sport</title>
-    <style>
-        /* --- CHARTE GRAPHIQUE MOUV'SPORT MARTINIQUE --- */
-
-        :root {
-            /* PALETTE DE COULEURS */
-            --primary-blue: #0B4D00;      /* Bleu Abysse */
-            --accent-orange: #FF5722;     /* Orange Flamboyant */
-            --secondary-teal: #00BCD4;    /* Turquoise Lagon */
-            --bg-light: #8BFF95;          /* Blanc Écume */
-            --text-dark: #2C3E50;         /* Gris Anthracite (Texte) */
-            --text-grey: #6c757d;         /* Gris moyen */
-            
-            /* ETATS */
-            --success: #2ECC71;
-            --danger: #E74C3C;
-            --warning: #F1C40F;
-
-            /* FORMES */
-            --radius-box: 12px;
-            --radius-btn: 8px;
-            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        /* BASE */
-        body {
-            font-family: 'Inter', 'Roboto', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-            line-height: 1.6;
-        }
-
-        h1, h2, h3, h4 {
-            font-family: 'Montserrat', sans-serif;
-            color: var(--primary-blue);
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        a { text-decoration: none; transition: 0.3s; }
-
-        /* COMPOSANTS : CARTES (Box) */
-        .card, .box, .login-box, .score-box {
-            background: white;
-            border-radius: var(--radius-box);
-            box-shadow: var(--shadow-soft);
-            padding: 25px;
-            margin-bottom: 20px;
-            border: none; /* Pas de bordure noire */
-        }
-
-        /* COMPOSANTS : BOUTONS */
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: var(--radius-btn);
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            color: white;
-        }
-
-        .btn-primary, .btn-action, .btn-offre {
-            background: linear-gradient(135deg, var(--accent-orange), #FF8A65); /* Dégradé Flamboyant */
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px); /* Petit effet de levier */
-            box-shadow: 0 4px 8px rgba(255, 87, 34, 0.4);
-        }
-
-        .btn-secondary, .btn-retour {
-            background-color: white;
-            border: 2px solid var(--primary-blue);
-            color: var(--primary-blue);
-        }
-
-        .btn-valider { background-color: var(--success); color: white; }
-        .btn-refuser, .btn-logout { background-color: var(--danger); color: white; }
-
-        /* NAVIGATION */
-        .navbar, .header {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: var(--radius-box);
-        }
-
-        .navbar h1, .header h1 { color: white; margin: 0; font-size: 1.5rem; }
-
-        /* TABLEAUX MODERNES */
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: white;
-            border-radius: var(--radius-box);
-            overflow: hidden; /* Pour garder les coins ronds */
-            box-shadow: var(--shadow-soft);
-        }
-
-        th {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 15px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f1f7ff; } /* Survol bleu très pâle */
-
-        /* INPUTS FORMULAIRES */
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius-btn);
-            background-color: #fafafa;
-            font-size: 1rem;
-            box-sizing: border-box; /* Important pour les marges */
-        }
-
-        input:focus, select:focus {
-            border-color: var(--secondary-teal);
-            outline: none;
-            background-color: white;
-        }
-
-        /* Specific for club */
-        .score-box { background: linear-gradient(135deg, var(--secondary-teal), #80DEEA); color: white; border-left: 5px solid var(--primary-blue); }
-        .score-box h3 { color: white; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
-
-    <div class="header">
-        <h1>Bienvenue, {{ club[1] }}</h1>
-        <a href="/logout" class="btn btn-logout">Déconnexion</a>
+    <div id="loader-overlay" class="loader-overlay">
+            <video autoplay loop muted playsinline class="loader-video">
+                <source src="{{ url_for('static', path='video/loader.mp4') }}" type="video/mp4">
+            </video>
     </div>
+    <header class="navbar">
+        <div class="brand">
+            <a href="/" style="color: white; font-size: 1.2rem; font-weight: bold; text-decoration: none;">
+                Mouv'Sport <span style="font-size:0.7em; opacity:0.8; font-weight:normal;">| Espace Club</span>
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="color: white; font-weight: 500;">👤 {{ club[1] }}</span>
+            <a href="/logout"><button class="btn btn-logout" style="padding: 8px 15px; font-size: 0.85rem;">Déconnexion</button></a>
+        </div>
+    </header>
 
-    <div class="score-box">
-        <h3>Votre Réputation</h3>
-        <p><strong>Score de Confiance :</strong> {{ club[3] }} / 100 pts</p>
-        <p><strong>Statut Financier :</strong> {{ club[4] }}</p>
-        <p><em>Un score élevé accélère vos démarches administratives.</em></p>
-    </div>
+    <main class="container">
 
-    <h2>Gestion de l'Effectif</h2>
-    <p>Voici les joueurs actuellement sous contrat avec votre club :</p>
+        <div class="card" style="margin-bottom: 20px; background:#0f172a; color:white; border-left:4px solid var(--spicy-orange);">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:15px;">
+                <div>
+                    <h3 style="margin:0; font-size:1rem;">Centre de notifications</h3>
+                    {% if joueurs_en_attente %}
+                        <p style="margin:4px 0; font-size:0.9rem;">
+                            🔔 <strong>{{ joueurs_en_attente|length }} demande(s)</strong> de joueur en attente de validation.
+                        </p>
+                        <p style="margin:0; font-size:0.8rem; opacity:0.9;">
+                            Un joueur a créé un compte en choisissant votre club. Validez pour confirmer qu’il fait bien partie de votre effectif.
+                        </p>
+                    {% else %}
+                        <p style="margin:4px 0; font-size:0.9rem;">
+                            ✅ Aucune nouvelle demande de joueur pour le moment.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Poste</th>
-                <th>Note Fairplay</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for j in joueurs %}
-            <tr>
-                <td>{{ j[1] }}</td>
-                <td>{{ j[2] }}</td>
-                <td>{{ j[4] }}</td>
-                <td>{{ j[5] }}/10</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4">Aucun joueur enregistré pour le moment.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="score-box" style="margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h3 style="color: white; margin-top: 0;">Votre Réputation</h3>
+                    <p style="margin: 5px 0;"><strong>Score de Confiance :</strong> {{ club[3] }} / 100 pts</p>
+                    <p style="margin: 5px 0;"><strong>Statut Financier :</strong> {{ club[4] }}</p>
+                </div>
+                <div style="font-size: 2rem;">📊</div>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.9;"><em>Un score élevé accélère vos démarches administratives.</em></p>
+        </div>
 
-    <br>
-    <a href="/mercato" class="btn btn-action">+ Initier une demande de transfert</a>
-    <a href="/" style="margin-left: 20px;">Retour à l'accueil public</a>
+        {% if joueurs_en_attente %}
+        <div class="card" style="border-left: 5px solid var(--spicy-orange);">
+            <h3 style="margin-top:0;">👥 Joueurs en attente de validation</h3>
+            <p style="font-size:0.9rem; color:var(--text-grey);">
+                Ces comptes ont été créés par des joueurs de football qui se déclarent dans votre club.
+                Validez uniquement ceux que vous reconnaissez.
+            </p>
+            <div class="table-wrapper" style="margin-top:15px;">
+                <div class="responsive-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Identifiant</th>
+                                <th>Sport</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in joueurs_en_attente %}
+                            <tr>
+                                <td>{{ p[1] }}</td>
+                                <td>Football</td>
+                                <td>
+                                    <a href="/club/validate_player/{{ p[0] }}/valider" class="btn btn-primary" style="font-size:0.8rem; padding:6px 10px; margin-right:6px;">
+                                        Valider
+                                    </a>
+                                    <a href="/club/validate_player/{{ p[0] }}/refuser" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 10px;">
+                                        Refuser
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card" style="background: #f0f9ff; border-left: 5px solid var(--ocean-blue);">
+            <h3 style="color: var(--ocean-blue); margin-top: 0;">🔎 Filtrer l'effectif (Football)</h3>
+            
+            <form action="/club" method="GET" style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="niveau">Catégorie / Niveau :</label>
+                    <select name="niveau">
+                        <option value="Tous">Tous les niveaux</option>
+                        <option value="R1" {% if filtre_niveau == 'R1' %}selected{% endif %}>Régionale 1</option>
+                        <option value="R2" {% if filtre_niveau == 'R2' %}selected{% endif %}>Régionale 2</option>
+                        <option value="R3" {% if filtre_niveau == 'R3' %}selected{% endif %}>Régionale 3</option>
+                        <option value="U19" {% if filtre_niveau == 'U19' %}selected{% endif %}>Jeunes (U19)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-action" style="margin-bottom: 2px;">Filtrer</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="section-header" style="margin-top: 30px;">
+            <h2>Effectif Sous Contrat</h2>
+            <p>Gérez vos licenciés et initiez des transferts.</p>
+        </div>
+
+        <div class="table-wrapper">
+            <div class="responsive-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Poste</th>
+                            <th>Note Fairplay</th>
+                            <th>Niveau</th> 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for j in joueurs %}
+                        <tr>
+                            <td style="font-weight: bold; color: var(--ocean-blue);">{{ j[1] }}</td>
+                            <td>{{ j[2] }}</td>
+                            <td>{{ j[4] }}</td>
+                            
+                            <td>
+                                {% if j[5] >= 8 %}
+                                    <span style="color: var(--nature-green); font-weight: bold;">{{ j[5] }}/10</span>
+                                {% elif j[5] < 5 %}
+                                    <span style="color: var(--sunset-red); font-weight: bold;">{{ j[5] }}/10</span>
+                                {% else %}
+                                    <span>{{ j[5] }}/10</span>
+                                {% endif %}
+                            </td>
+
+                            <td><span class="price-tag" style="background:#e3f2fd; color:#0277bd;">{{ j[6] if j|length > 6 else 'Standard' }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                Aucun joueur ne correspond à ces critères.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: flex-end;">
+            <a href="/" class="btn btn-secondary">Retour accueil public</a>
+            <a href="/mercato" class="btn btn-action">🛒 Aller au Mercato</a>
+        </div>
+
+    </main>
 
 </body>
 </html>

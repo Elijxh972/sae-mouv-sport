@@ -15,20 +15,18 @@
     /* NEUTRES */
     --sand-bg: #f8f9fa;          /* Gris très pâle (Fond de page) */
     --pure-white: #ffffff;
-    --text-dark: #1a2a3a;        /* Bleu nuit très sombre (Texte principal) */
-    --text-grey: #6c757d;        /* Gris moyen (Textes secondaires) */
+    --text-dark: #1e293b;        /* Bleu nuit très sombre (Texte principal) */
+    --text-grey: #64748b;        /* Gris moyen (Textes secondaires) */
 
     /* DESIGN SYSTEM */
     --radius-s: 8px;
     --radius-m: 12px;
     --radius-l: 20px;
-    --shadow-soft: 0 8px 24px rgba(0, 78, 146, 0.08); /* Ombre bleutée légère */
-    --shadow-hover: 0 12px 30px rgba(0, 78, 146, 0.15);
+    --shadow-soft: 0 8px 24px rgba(0, 78, 146, 0.08);
     --header-height: 70px;
     
     /* TRANSITIONS */
     --transition-fast: 0.2s ease;
-    --transition-smooth: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 /* --- 2. RESET & BASE --- */
@@ -46,7 +44,6 @@ body {
     padding-top: var(--header-height); /* Pour compenser le menu fixe */
 }
 
-/* Titres avec la police Montserrat pour le côté "Sport/Marque" */
 h1, h2, h3, h4 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
@@ -59,8 +56,6 @@ ul { list-style: none; }
 
 /* --- 3. NAVBAR (Menu) --- */
 .navbar {
-    background: var(--ocean-blue);
-    /* Petit dégradé subtil rappelant la mer */
     background: linear-gradient(90deg, #003366 0%, #004e92 100%);
     height: var(--header-height);
     display: flex;
@@ -73,45 +68,62 @@ ul { list-style: none; }
     right: 0;
     z-index: 1000;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    backdrop-filter: blur(10px); /* Effet verre dépoli si on ajoute de la transparence */
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    color: var(--pure-white);
 }
 
 .brand h1 {
     color: var(--pure-white);
     font-size: 1.4rem;
     text-transform: uppercase;
-    font-style: italic; /* Donne du mouvement */
+    font-style: italic;
+    margin: 0;
 }
 
-/* Badge Sport dans le menu */
+/* Logo dans la navbar */
+.logo-img {
+    height: 50px;
+    width: auto;
+    margin-right: 15px;
+}
+
+/* --- 3.1 NAVBAR : Liste des sports (boutons) --- */
 .sports-nav {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
+    max-width: 550px;
     overflow-x: auto;
-    padding: 5px;
-    scrollbar-width: none; /* Cache la barre de scroll */
+    padding: 6px 10px;
 }
 
-.sport-badge {
-    color: var(--pure-white);
-    background: rgba(255, 255, 255, 0.15);
+.sport-pill {
     padding: 6px 14px;
-    border-radius: 50px;
-    font-size: 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--pure-white);
+    font-size: 0.78rem;
     font-weight: 500;
-    border: 1px solid rgba(255,255,255,0.2);
-    transition: var(--transition-fast);
-    cursor: pointer;
     white-space: nowrap;
+    cursor: default;
+    transition: var(--transition-fast);
 }
 
-.sport-badge:hover {
-    background: var(--pure-white);
-    color: var(--ocean-blue);
-    transform: translateY(-2px);
+.sport-pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
 }
 
-/* --- 4. BOUTONS --- */
+.sport-pill:active {
+    transform: translateY(0);
+}
+
+/* --- 4. BOUTONS GÉNÉRAUX --- */
 .auth-buttons {
     display: flex;
     gap: 12px;
@@ -126,9 +138,10 @@ ul { list-style: none; }
     border: none;
     transition: var(--transition-fast);
     text-align: center;
+    display: inline-block;
 }
 
-/* Bouton Connexion (Transparent) */
+/* Bouton Navbar (Transparent) */
 .btn-login {
     background: transparent;
     color: var(--pure-white);
@@ -136,19 +149,30 @@ ul { list-style: none; }
 }
 .btn-login:hover {
     background: rgba(255,255,255,0.1);
-    border-color: var(--pure-white);
 }
 
-/* Bouton Inscription (Orange Madras - Action principale) */
-.btn-register {
+/* Bouton Inscription & Action Principale */
+.btn-register, .btn-action, .btn-primary {
     background: var(--spicy-orange);
     color: var(--pure-white);
     box-shadow: 0 4px 10px rgba(255, 111, 0, 0.3);
 }
-.btn-register:hover {
+.btn-register:hover, .btn-action:hover, .btn-primary:hover {
     background: #e65100;
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
+}
+
+/* Bouton Secondaire (Retour) */
+.btn-secondary {
+    background: white;
+    border: 2px solid var(--ocean-blue);
+    color: var(--ocean-blue);
+}
+
+/* Bouton Logout/Refus */
+.btn-logout, .btn-refuser {
+    background-color: var(--sunset-red);
+    color: white;
 }
 
 /* --- 5. LAYOUT & CONTENU --- */
@@ -156,13 +180,11 @@ ul { list-style: none; }
     max-width: 1200px;
     margin: 40px auto;
     padding: 0 20px;
-    animation: fadeIn 0.6s ease-out; /* Petite animation d'arrivée */
+    animation: fadeIn 0.6s ease-out;
 }
 
 .section-header {
     margin-bottom: 25px;
-    display: flex;
-    flex-direction: column;
 }
 
 .section-header h2 {
@@ -178,119 +200,279 @@ ul { list-style: none; }
     display: block;
     width: 6px;
     height: 30px;
-    background: var(--spicy-orange); /* Barre orange à gauche du titre */
+    background: var(--spicy-orange);
     border-radius: 4px;
 }
 
-.section-header p {
-    color: var(--text-grey);
-    margin-left: 16px;
-}
-
-/* --- 6. TABLEAU DES TRANSFERTS (Carte) --- */
+/* --- 6. TABLEAUX MODERNES (CORRIGÉS) --- */
 .table-wrapper {
     background: var(--pure-white);
     border-radius: var(--radius-m);
-    box-shadow: var(--shadow-soft);
-    overflow: hidden; /* Important pour les coins arrondis */
-    border: 1px solid rgba(0,0,0,0.03);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid #eef2f6;
+    margin-bottom: 20px;
 }
 
 .responsive-scroll {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iPhone */
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 700px; /* Force le scroll horizontal sur petit écran */
+    min-width: 600px;
 }
 
+/* En-tête : Fond Bleu / Texte Blanc */
 thead {
-    background-color: #f1f5f9;
+    background-color: var(--ocean-blue);
 }
 
 th {
-    padding: 18px 25px;
+    padding: 18px 20px;
     text-align: left;
     font-weight: 700;
-    color: var(--ocean-blue);
+    font-size: 0.85rem;
     text-transform: uppercase;
-    font-size: 0.8rem;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid #e2e8f0;
+    color: var(--pure-white) !important;
+    border-bottom: none;
+}
+
+/* Corps : Fond Blanc / Texte Foncé */
+tbody {
+    background-color: var(--pure-white);
 }
 
 td {
-    padding: 20px 25px;
+    padding: 16px 20px;
+    vertical-align: middle;
     border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+    color: var(--text-dark) !important; /* Force le texte noir */
+}
+
+/* Zébrure */
+tbody tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+tbody tr:hover {
+    background-color: #e0f2fe;
+}
+
+td:first-child {
+    font-weight: 600;
+    color: var(--ocean-blue) !important;
+}
+
+/* Badges / Pilules */
+.badge-info, .price-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: #e3f2fd;
+    color: #0277bd !important;
+}
+
+.badge-success {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    background-color: #e8f5e9;
+    color: #2e7d32 !important;
+    font-size: 0.8rem;
+}
+
+.badge-danger {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    background-color: #ffebee;
+    color: #c62828 !important;
+    font-size: 0.8rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-grey) !important;
+    background: white;
+}
+
+/* --- 7. CARTES & BOXES --- */
+.card, .score-box {
+    background: white;
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-soft);
+    padding: 25px;
+    margin-bottom: 20px;
+    border: none;
+}
+
+/* Box Spéciale Club */
+.score-box {
+    background: linear-gradient(135deg, var(--ocean-blue), var(--lagoon-teal));
+    color: white;
+}
+.score-box h3, .score-box p, .score-box strong {
+    color: white !important;
+}
+
+/* --- 8. PAGES LOGIN & REGISTER (Centrage & Fix Couleurs) --- */
+
+/* Active le mode Flexbox plein écran uniquement sur ces pages */
+body:has(.login-box), body:has(.register-box) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--sand-bg) 0%, #e2e8f0 100%);
+    padding-top: 0;
+}
+
+.login-box, .register-box {
+    background: var(--pure-white);
+    padding: 40px;
+    border-radius: var(--radius-m);
+    box-shadow: 0 10px 40px rgba(0, 78, 146, 0.15);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.login-box h2, .register-box h2 {
+    margin-bottom: 30px;
+    color: var(--ocean-blue);
+    font-size: 1.8rem;
+}
+
+/* Inputs Formulaires */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+
+label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: -5px;
     color: var(--text-dark);
 }
 
-tr { transition: background-color 0.2s; }
-tr:last-child td { border-bottom: none; }
-
-/* Effet au survol d'une ligne */
-tr:hover {
-    background-color: #f8fbff;
+input, select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-s);
+    font-size: 1rem;
+    background-color: #fafafa;
+    color: var(--text-dark);
 }
 
-/* Style spécifique pour les données */
-td:first-child {
+input:focus, select:focus {
+    border-color: var(--lagoon-teal);
+    background-color: var(--pure-white);
+    outline: none;
+}
+
+/* Surcharge Boutons Formulaires (Pour qu'ils ne soient pas transparents) */
+.login-box .btn-login {
+    background: var(--ocean-blue);
+    color: var(--pure-white);
+    width: 100%;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 78, 146, 0.3);
+}
+
+.login-box .btn-login:hover {
+    background: #003366;
+}
+
+.register-box .btn-register {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 20px;
+    border-radius: var(--radius-s);
     font-weight: 600;
-    color: var(--ocean-blue); /* Nom du joueur en bleu */
+    font-size: 0.95rem;
+    background: var(--spicy-orange);
+    color: var(--pure-white);
+    box-shadow: 0 4px 15px rgba(255, 111, 0, 0.35);
 }
 
-.club-name { font-weight: 500; }
-
-.price-tag {
-    display: inline-block;
-    padding: 6px 12px;
-    background-color: rgba(46, 204, 113, 0.1); /* Fond vert très clair */
-    color: var(--nature-green); /* Texte vert */
-    font-weight: 700;
-    border-radius: 6px;
+/* Liens aide */
+.help-text {
+    margin-top: 25px;
     font-size: 0.9rem;
-}
-
-/* État vide */
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
     color: var(--text-grey);
 }
+.help-text a {
+    color: var(--lagoon-teal);
+    font-weight: 600;
+}
 
-/* --- 7. ANIMATIONS --- */
+/* --- 9. ANIMATIONS --- */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- 8. RESPONSIVE (Mobile) --- */
+/* --- 10. RESPONSIVE --- */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
         height: auto;
         padding: 15px;
-        gap: 15px;
+        gap: 10px;
     }
+    body { padding-top: 140px; }
+    
+    /* Reset padding pour login sur mobile */
+    body:has(.login-box) { padding-top: 0; }
 
-    body { padding-top: 150px; } /* Plus d'espace car le header est plus haut */
-
-    .brand h1 { font-size: 1.2rem; }
-
-    .auth-buttons {
-        width: 100%;
+    .sports-nav {
+        max-width: 100%;
         justify-content: center;
-    }
-    
-    .btn {
-        flex: 1; /* Les boutons prennent toute la largeur */
-        padding: 12px;
+        padding: 4px 0;
     }
 
-    .container { margin-top: 20px; }
-    
-    th, td { padding: 15px; } /* Moins d'espace dans le tableau */
+    .btn { width: 100%; }
+    .auth-buttons { width: 100%; }
+}
+
+/* --- ICONE DE CHARGEMENT (LOADER) --- */
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 42, 72, 0.7); /* Bleu Abysse semi-transparent */
+    backdrop-filter: blur(8px);        /* Effet de flou pro */
+    -webkit-backdrop-filter: blur(8px);
+    display: none;                     /* Caché par défaut */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;                     /* Toujours au-dessus */
+}
+
+.loader-video {
+    width: 180px; 
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(0, 188, 212, 0.4)); /* Halo Turquoise */
+}
+
+/* Classe activée par JavaScript */
+.is-active {
+    display: flex !important;
 }

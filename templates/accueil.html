@@ -5,25 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mouv'Sport - Mercato Martinique</title>
     
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', path='img/logo.png') }}" type="image/png">  
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-
-    <link href="{{ url_for('static', path='/css/style.css') }}" rel="stylesheet">
 </head>
 <body>
 
     <header class="navbar">
         <div class="brand">
-            <a href="/"><h1>Mouv'Sport</h1></a>
+            <a href="/" class="brand-link">
+                <img src="{{ url_for('static', path='img/logo.png') }}" alt="Logo Mouv'Sport" class="logo-img">
+                <h1>Mouv'Sport</h1>
+            </a>
         </div>
-
-        <div class="sports-nav">
-            {% for sport in sports %}
-                <span class="sport-badge">{{ sport[1] }}</span>
-            {% endfor %}
-        </div>
-
         <div class="auth-buttons">
             <a href="/login"><button class="btn btn-login">Connexion</button></a>
             <a href="/register"><button class="btn btn-register">Créer un compte</button></a>
@@ -33,8 +30,8 @@
     <main class="container">
         
         <div class="section-header">
-            <h2>Dernières Transactions</h2>
-            <p>Toutes les mutations officielles de la ligue en temps réel.</p>
+            <h2>Dernières Transactions (30 jours)</h2>
+            <p>Les mouvements officiels validés par la ligue récemment.</p>
         </div>
 
         <div class="table-wrapper">
@@ -45,24 +42,27 @@
                             <th>Joueur</th>
                             <th>Club Départ</th>
                             <th>Club Arrivée</th>
-                            <th>Solidarité</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for m in mutations %}
                         <tr>
-                            <td style="font-weight: 600;">{{ m[1] }}</td>
+                            <td style="font-weight: 600; color: var(--ocean-blue);">
+                                {{ m[0] }} {{ m[1] }}
+                            </td>
                             
-                            <td>{{ m[2] }}</td>
+                            <td style="color: var(--text-grey);">
+                                {{ m[2] }}
+                            </td>
                             
-                            <td class="club-name">{{ m[3] }}</td>
-                            
-                            <td><span class="price-tag">{{ m[4] }} €</span></td>
+                            <td style="font-weight: 600;">
+                                <span style="color: var(--nature-green);">➔</span> {{ m[3] }}
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="4" class="empty-state">
-                                Le mercato est calme... Aucune mutation récente.
+                            <td colspan="3" class="empty-state">
+                                Aucun mouvement validé sur les 30 derniers jours.
                             </td>
                         </tr>
                         {% endfor %}
