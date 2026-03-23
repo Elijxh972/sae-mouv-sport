@@ -31,9 +31,10 @@
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h3 style="margin:0; font-size:1rem;">Notifications</h3>
-                    {% if joueurs_en_attente %}
+                    {% if joueurs_en_attente or offres_recues %}
                         <p style="margin:4px 0; font-size:0.9rem;">
-                            🔔 <strong>{{ joueurs_en_attente|length }} nouveau(x) joueur(s)</strong> à valider dans votre effectif.
+                            {% if joueurs_en_attente %}🔔 <strong>{{ joueurs_en_attente|length }} nouveau(x) joueur(s)</strong> à valider.{% endif %}
+                            {% if offres_recues %} &nbsp;|&nbsp; 📨 <strong>{{ offres_recues|length }} offre(s) de transfert</strong> reçue(s).{% endif %}
                         </p>
                     {% else %}
                         <p style="margin:4px 0; font-size:0.9rem; opacity:0.8;">
@@ -44,6 +45,29 @@
                 <div style="font-size: 1.5rem;">📣</div>
             </div>
         </div>
+
+        {% if offres_recues %}
+        <div class="card" style="border-left: 5px solid var(--ocean-blue); margin-bottom: 30px;">
+            <h3 style="margin-top:0;">📨 Offres de transfert reçues</h3>
+            <div class="table-wrapper"><div class="responsive-scroll">
+                <table>
+                    <thead>
+                        <tr><th>Joueur</th><th>Club acheteur</th><th>Montant</th><th>Type</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for o in offres_recues %}
+                        <tr>
+                            <td><strong>{{ o[1] }} {{ o[2] }}</strong></td>
+                            <td>{{ o[3] }}</td>
+                            <td>{{ o[4] }} €</td>
+                            <td>{{ o[5] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+        {% endif %}
 
         {% if joueurs_en_attente %}
         <div class="card" style="border-left: 5px solid var(--spicy-orange); margin-bottom: 30px;">

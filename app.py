@@ -141,6 +141,46 @@ async def mercato(request: Request, search: str = None, poste: str = 'Tous', age
         'age_max': age_max
     })
 
+# --- OFFRES ---
+
+@app.get('/faire_offre/{id_joueur}', response_class=HTMLResponse)
+async def faire_offre_get(request: Request, id_joueur: int):
+    if 'user_id' not in request.session:
+        return RedirectResponse(url='/login')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT nom, prenom FROM JOUEUR WHERE id_joueur = %s", (id_joueur,))
+    joueur = cursor.fetchone()
+    conn.close()
+    return templates.TemplateResponse(request, 'faire_offre.html', {'joueur': joueur, 'id_joueur': id_joueur})
+
+@app.post('/faire_offre/{id_joueur}')
+async def faire_offre_post(request: Request, id_joueur: int, montant: int = Form(...), type_mutation: str = Form(...)):
+    if 'user_id' not in request.session:
+        return RedirectResponse(url='/login')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS OFFRE (
+            id_offre SERIAL PRIMARY KEY,
+            id_joueur INT,
+            id_club_acheteur INT,
+            montant INT,
+            type_mutation TEXT,
+            statut TEXT DEFAULT 'en_attente',
+            date_offre TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    cursor.execute("SELECT id_club_actuel FROM JOUEUR WHERE id_joueur = %s", (id_joueur,))
+    id_club_vendeur = cursor.fetchone()[0]
+    cursor.execute(
+        "INSERT INTO OFFRE (id_joueur, id_club_acheteur, montant, type_mutation) VALUES (%s, %s, %s, %s)",
+        (id_joueur, request.session['id_club'], montant, type_mutation)
+    )
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url='/mercato', status_code=302)
+
 # --- ESPACE CLUB (CORRIGÉ) ---
 
 @app.get('/club', response_class=HTMLResponse)
@@ -162,8 +202,29 @@ async def club_dashboard(request: Request):
     """, (mon_club_id,))
     joueurs = cursor.fetchall()
 
+    cursor.execute("SELECT id_user, login FROM UTILISATEUR WHERE id_club = %s AND role = 'JOUEUR' AND est_verifie = FALSE", (mon_club_id,))
+    joueurs_en_attente = cursor.fetchall()
+
+    offres_recues = []
+    try:
+        cursor.execute("""
+            SELECT o.id_offre, j.nom, j.prenom, c.nom_club, o.montant, o.type_mutation
+            FROM OFFRE o
+            JOIN JOUEUR j ON o.id_joueur = j.id_joueur
+            JOIN CLUB c ON o.id_club_acheteur = c.id_club
+            WHERE j.id_club_actuel = %s AND o.statut = 'en_attente'
+        """, (mon_club_id,))
+        offres_recues = cursor.fetchall()
+    except:
+        pass
+
     conn.close()
-    return templates.TemplateResponse(request, 'club_dashboard.html', {'club': club, 'joueurs': joueurs})
+    return templates.TemplateResponse(request, 'club_dashboard.html', {
+        'club': club,
+        'joueurs': joueurs,
+        'joueurs_en_attente': joueurs_en_attente,
+        'offres_recues': offres_recues
+    })
 
 @app.get('/update_db')
 async def update_db():
