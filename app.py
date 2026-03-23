@@ -223,6 +223,29 @@ async def club_dashboard(request: Request):
         'offres_envoyees': offres_envoyees
     })
 
+@app.get('/club/badge')
+async def club_badge(request: Request):
+    if 'user_id' not in request.session:
+        from fastapi.responses import JSONResponse
+        return JSONResponse({'total': 0})
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    mon_club_id = request.session['id_club']
+    try:
+        cursor.execute("""
+            SELECT COUNT(*) FROM OFFRE o
+            JOIN JOUEUR j ON o.id_joueur = j.id_joueur
+            WHERE j.id_club_actuel = %s AND o.statut = 'en_attente'
+        """, (mon_club_id,))
+        recues = cursor.fetchone()[0]
+        cursor.execute("SELECT COUNT(*) FROM OFFRE WHERE id_club_acheteur = %s", (mon_club_id,))
+        envoyees = cursor.fetchone()[0]
+    except:
+        recues, envoyees = 0, 0
+    conn.close()
+    from fastapi.responses import JSONResponse
+    return JSONResponse({'total': recues + envoyees})
+
 @app.get('/offre/{id_offre}/accepter')
 async def accepter_offre(request: Request, id_offre: int):
     if 'user_id' not in request.session:

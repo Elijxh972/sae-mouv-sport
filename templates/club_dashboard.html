@@ -158,7 +158,9 @@
     <div id="chat-fab" onclick="toggleListeChats()" style="position:fixed; bottom:20px; right:20px; width:56px; height:56px; background:linear-gradient(135deg,var(--ocean-blue),var(--lagoon-teal)); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 15px rgba(0,78,146,0.4); z-index:9997; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
         <span style="font-size:1.4rem;">&#x1F4AC;</span>
         {% if offres_recues or offres_envoyees %}
-        <div style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ (offres_recues|length) + (offres_envoyees|length) }}</div>
+        <div id="chat-badge" style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ (offres_recues|length) + (offres_envoyees|length) }}</div>
+        {% else %}
+        <div id="chat-badge" style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:none; align-items:center; justify-content:center;"></div>
         {% endif %}
     </div>
 
@@ -254,6 +256,19 @@
         }
 
         setInterval(() => { if (currentOffreId) chargerMessages(); }, 5000);
+
+        async function actualiserBadge() {
+            const res = await fetch('/club/badge');
+            const data = await res.json();
+            const badge = document.getElementById('chat-badge');
+            if (data.total > 0) {
+                badge.textContent = data.total;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        setInterval(actualiserBadge, 5000);
     </script>
 </body>
 </html>
