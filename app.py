@@ -101,6 +101,46 @@ async def register_post(request: Request, login: str = Form(...), password: str 
     except Exception as e:
         return HTMLResponse(f"Erreur inscription : {str(e)}")
 
+# --- MERCATO ---
+
+@app.get('/mercato', response_class=HTMLResponse)
+async def mercato(request: Request, search: str = None, poste: str = 'Tous', age_min: int = 0, age_max: int = 99):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT DISTINCT poste FROM JOUEUR WHERE poste IS NOT NULL ORDER BY poste")
+    postes_dispo = [r[0] for r in cursor.fetchall()]
+
+    query = """
+        SELECT j.id_joueur, j.nom, j.prenom, j.poste, c.nom_club,
+               EXTRACT(YEAR FROM AGE(j.date_naissance))::int as age
+        FROM JOUEUR j
+        JOIN CLUB c ON j.id_club_actuel = c.id_club
+        WHERE EXTRACT(YEAR FROM AGE(j.date_naissance)) BETWEEN %s AND %s
+    """
+    params = [age_min, age_max]
+
+    if search:
+        query += " AND (j.nom ILIKE %s OR j.prenom ILIKE %s)"
+        params += [f"%{search}%", f"%{search}%"]
+    if poste and poste != 'Tous':
+        query += " AND j.poste = %s"
+        params.append(poste)
+
+    query += " ORDER BY j.nom ASC"
+    cursor.execute(query, params)
+    joueurs = cursor.fetchall()
+    conn.close()
+
+    return templates.TemplateResponse(request, 'mercato.html', {
+        'joueurs': joueurs,
+        'postes_dispo': postes_dispo,
+        'search': search,
+        'poste_active': poste,
+        'age_min': age_min,
+        'age_max': age_max
+    })
+
 # --- ESPACE CLUB (CORRIGÉ) ---
 
 @app.get('/club', response_class=HTMLResponse)
