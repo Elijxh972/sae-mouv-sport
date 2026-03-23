@@ -117,8 +117,9 @@ async def mercato(request: Request, search: str = None, poste: str = 'Tous', age
         FROM JOUEUR j
         JOIN CLUB c ON j.id_club_actuel = c.id_club
         WHERE EXTRACT(YEAR FROM AGE(j.date_naissance)) BETWEEN %s AND %s
+        AND j.id_club_actuel != %s
     """
-    params = [age_min, age_max]
+    params = [age_min, age_max, request.session.get('id_club', -1)]
 
     if search:
         query += " AND (j.nom ILIKE %s OR j.prenom ILIKE %s)"
@@ -206,6 +207,7 @@ async def club_dashboard(request: Request):
     joueurs_en_attente = cursor.fetchall()
 
     offres_recues = []
+    offres_envoyees = []
     try:
         cursor.execute("""
             SELECT o.id_offre, j.nom, j.prenom, c.nom_club, o.montant, o.type_mutation
@@ -215,6 +217,16 @@ async def club_dashboard(request: Request):
             WHERE j.id_club_actuel = %s AND o.statut = 'en_attente'
         """, (mon_club_id,))
         offres_recues = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT o.id_offre, j.nom, j.prenom, c.nom_club, o.montant, o.type_mutation, o.statut
+            FROM OFFRE o
+            JOIN JOUEUR j ON o.id_joueur = j.id_joueur
+            JOIN CLUB c ON j.id_club_actuel = c.id_club
+            WHERE o.id_club_acheteur = %s
+            ORDER BY o.date_offre DESC
+        """, (mon_club_id,))
+        offres_envoyees = cursor.fetchall()
     except:
         pass
 
@@ -223,8 +235,31 @@ async def club_dashboard(request: Request):
         'club': club,
         'joueurs': joueurs,
         'joueurs_en_attente': joueurs_en_attente,
-        'offres_recues': offres_recues
+        'offres_recues': offres_recues,
+        'offres_envoyees': offres_envoyees
     })
+
+@app.get('/offre/{id_offre}/accepter')
+async def accepter_offre(request: Request, id_offre: int):
+    if 'user_id' not in request.session:
+        return RedirectResponse(url='/login')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE OFFRE SET statut = 'acceptee' WHERE id_offre = %s", (id_offre,))
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url='/club', status_code=302)
+
+@app.get('/offre/{id_offre}/refuser')
+async def refuser_offre(request: Request, id_offre: int):
+    if 'user_id' not in request.session:
+        return RedirectResponse(url='/login')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE OFFRE SET statut = 'refusee' WHERE id_offre = %s", (id_offre,))
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url='/club', status_code=302)
 
 @app.get('/update_db')
 async def update_db():

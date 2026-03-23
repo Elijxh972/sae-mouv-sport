@@ -61,6 +61,11 @@
                             <td>{{ o[3] }}</td>
                             <td>{{ o[4] }} €</td>
                             <td>{{ o[5] }}</td>
+                            <td style="display:flex; gap:6px;">
+                                <a href="/offre/{{ o[0] }}/accepter" class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;">✅ Accepter</a>
+                                <a href="/offre/{{ o[0] }}/refuser" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 12px;">❌ Refuser</a>
+                                <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px; opacity:0.5;" disabled>💬 Discussion</button>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -114,6 +119,38 @@
             </div>
             <a href="/mercato" class="btn btn-action">🛒 Aller au Mercato</a>
         </div>
+
+        {% if offres_envoyees %}
+        <div class="card" style="border-left: 5px solid var(--lagoon-teal); margin-bottom: 30px;">
+            <h3 style="margin-top:0;">📤 Offres envoyées</h3>
+            <div class="table-wrapper"><div class="responsive-scroll">
+                <table>
+                    <thead>
+                        <tr><th>Joueur</th><th>Club actuel</th><th>Montant</th><th>Type</th><th>Statut</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for o in offres_envoyees %}
+                        <tr>
+                            <td><strong>{{ o[1] }} {{ o[2] }}</strong></td>
+                            <td>{{ o[3] }}</td>
+                            <td>{{ o[4] }} €</td>
+                            <td>{{ o[5] }}</td>
+                            <td>
+                                {% if o[6] == 'en_attente' %}
+                                    <span class="badge-info">⏳ En attente</span>
+                                {% elif o[6] == 'acceptee' %}
+                                    <span class="badge-success">✅ Acceptée</span>
+                                {% else %}
+                                    <span class="badge-danger">❌ Refusée</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+        {% endif %}
 
         <div class="table-wrapper">
             <div class="responsive-scroll">

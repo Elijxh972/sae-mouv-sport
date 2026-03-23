@@ -2,62 +2,52 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Faire une offre</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faire une offre - Mouv'Sport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
-    <style>
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #f1f7ff; } /* Survol bleu très pâle */
-
-        /* INPUTS FORMULAIRES */
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius-btn);
-            background-color: #fafafa;
-            font-size: 1rem;
-            box-sizing: border-box; /* Important pour les marges */
-        }
-
-        input:focus, select:focus {
-            border-color: var(--secondary-teal);
-            outline: none;
-            background-color: white;
-        }
-
-        /* Specific styles */
-        .sports { display: flex; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
-        .sport { margin: 5px; padding: 5px 10px; background: white; border-radius: 5px; color: var(--text-dark); border: 1px solid #ddd; }
-        .login-btn { position: absolute; top: 10px; right: 10px; padding: 10px 20px; background: var(--accent-orange); color: white; border: none; border-radius: var(--radius-btn); cursor: pointer; }
-        .login-btn:hover { background: #e64a19; }
-        .header h1 { color: white; }
-    </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Proposition de Transfert</h2>
-        <p>Vous souhaitez recruter : <strong>{{ joueur[0] }} {{ joueur[1] }}</strong></p>
-        
-        <form method="POST">
-            <label>Montant proposé (€) :</label>
-            <input type="number" name="montant" placeholder="Ex: 1500" required>
+    <header class="navbar">
+        <div class="brand">
+            <a href="/" style="color: white; font-size: 1.2rem; font-weight: bold; text-decoration: none;">
+                Mouv'Sport <span style="font-size:0.7em; opacity:0.8; font-weight:normal;">| Proposition de Transfert</span>
+            </a>
+        </div>
+        <a href="/mercato" class="btn btn-secondary">← Retour Mercato</a>
+    </header>
 
-            <label>Type de contrat :</label>
-            <select name="type_mutation">
-                <option value="Transfert">Achat définitif</option>
-                <option value="Pret">Prêt (1 saison)</option>
-            </select>
+    <main class="container" style="max-width: 520px;">
+        <div class="card" style="border-top: 4px solid var(--spicy-orange);">
+            <div style="text-align:center; margin-bottom: 25px;">
+                <div style="background: linear-gradient(135deg, var(--ocean-blue), var(--lagoon-teal)); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 1.5rem;">
+                    📨
+                </div>
+                <h2 style="margin:0; font-size: 1.5rem;">Proposition de Transfert</h2>
+                <p style="color: var(--text-grey); margin-top: 8px;">
+                    Joueur ciblé : <strong style="color: var(--ocean-blue);">{{ joueur[0] }} {{ joueur[1] }}</strong>
+                </p>
+            </div>
 
-            <button type="submit">Envoyer la proposition à la Ligue</button>
-        </form>
-        
-        <br>
-        <a href="/mercato">Annuler</a>
-    </div>
+            <form method="POST">
+                <label>Montant proposé (€)</label>
+                <input type="number" name="montant" placeholder="Ex : 1500" required min="0">
+
+                <label>Type de contrat</label>
+                <select name="type_mutation">
+                    <option value="Transfert">Achat définitif</option>
+                    <option value="Pret">Prêt (1 saison)</option>
+                </select>
+
+                <button type="submit" class="btn btn-action" style="width:100%; margin-top: 10px; padding: 14px;">
+                    Envoyer l'offre au club
+                </button>
+            </form>
+
+            <div style="text-align:center; margin-top: 15px;">
+                <a href="/mercato" style="color: var(--text-grey); font-size: 0.9rem;">Annuler</a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
