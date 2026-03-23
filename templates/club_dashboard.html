@@ -61,7 +61,7 @@
                             <td style="display:flex; gap:6px;">
                                 <a href="/offre/{{ o[0] }}/accepter" class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;">✅ Accepter</a>
                                 <a href="/offre/{{ o[0] }}/refuser" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 12px;">❌ Refuser</a>
-                                <button onclick="ouvrirChat({{ o[0] }}, '{{ o[1] }} {{ o[2] }}')" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">💬 Discussion</button>
+                                <button onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">💬 Discussion</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -169,15 +169,15 @@
         </div>
         <div style="max-height:300px; overflow-y:auto;">
             {% for o in offres_recues %}
-            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                 <div style="background:#e3f2fd; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:var(--ocean-blue); flex-shrink:0;">{{ o[1][0] }}{{ o[2][0] }}</div>
-                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[1] }} {{ o[2] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[3] }} &middot; {{ o[4] }}&euro;</div></div>
+                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[3] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[1] }} {{ o[2] }} &middot; {{ o[4] }}&euro;</div></div>
             </div>
             {% endfor %}
             {% for o in offres_envoyees %}
-            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                 <div style="background:#e8f5e9; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#2e7d32; flex-shrink:0;">{{ o[1][0] }}{{ o[2][0] }}</div>
-                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[1] }} {{ o[2] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[3] }} &middot; {{ o[4] }}&euro;</div></div>
+                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[3] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[1] }} {{ o[2] }} &middot; {{ o[4] }}&euro;</div></div>
             </div>
             {% endfor %}
             {% if not offres_recues and not offres_envoyees %}
@@ -190,7 +190,7 @@
     <div id="chat-widget" style="display:none; position:fixed; bottom:20px; right:20px; width:340px; background:white; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.2); z-index:9999; overflow:hidden; font-family:'Inter',sans-serif;">
         <div style="background:linear-gradient(90deg,#003366,#004e92); padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-                <div style="color:white; font-weight:700; font-size:0.95rem;">💬 Discussion</div>
+                <div style="color:white; font-weight:700; font-size:0.95rem;" id="chat-club"></div>
                 <div id="chat-titre" style="color:rgba(255,255,255,0.7); font-size:0.78rem;"></div>
             </div>
             <button onclick="fermerChat()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
@@ -215,9 +215,10 @@
             liste.style.display = liste.style.display === 'none' ? 'block' : 'none';
         }
 
-        function ouvrirChat(idOffre, nomJoueur) {
+        function ouvrirChat(idOffre, nomClub, nomJoueur) {
             currentOffreId = idOffre;
-            document.getElementById('chat-titre').textContent = nomJoueur;
+            document.getElementById('chat-club').textContent = nomClub;
+            document.getElementById('chat-titre').textContent = '⚽ ' + nomJoueur;
             document.getElementById('chat-liste').style.display = 'none';
             document.getElementById('chat-widget').style.display = 'block';
             chargerMessages();
