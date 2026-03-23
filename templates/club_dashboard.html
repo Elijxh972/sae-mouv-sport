@@ -62,7 +62,7 @@
                             <td style="display:flex; gap:6px;">
                                 <a href="/offre/{{ o[0] }}/accepter" class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;">✅ Accepter</a>
                                 <a href="/offre/{{ o[0] }}/refuser" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 12px;">❌ Refuser</a>
-                                <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px; opacity:0.5;" disabled>💬 Discussion</button>
+                                <button onclick="ouvrirChat({{ o[0] }}, '{{ o[1] }} {{ o[2] }}')" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">💬 Discussion</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -192,11 +192,67 @@
 
     </main>
 
+    <!-- WIDGET CHAT FLOTTANT -->
+    <div id="chat-widget" style="display:none; position:fixed; bottom:20px; right:20px; width:340px; background:white; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.2); z-index:9999; overflow:hidden; font-family:'Inter',sans-serif;">
+        <div style="background:linear-gradient(90deg,#003366,#004e92); padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div style="color:white; font-weight:700; font-size:0.95rem;">💬 Discussion</div>
+                <div id="chat-titre" style="color:rgba(255,255,255,0.7); font-size:0.78rem;"></div>
+            </div>
+            <button onclick="fermerChat()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
+        </div>
+        <div id="chat-messages" style="height:260px; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; background:#f8fafc;"></div>
+        <div style="padding:10px; border-top:1px solid #e2e8f0; display:flex; gap:8px;">
+            <input id="chat-input" type="text" placeholder="Votre message..." style="flex:1; padding:9px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:0.9rem;" onkeydown="if(event.key==='Enter') envoyerMessage()">
+            <button onclick="envoyerMessage()" class="btn btn-action" style="padding:9px 14px;">➤</button>
+        </div>
+    </div>
+
     <script>
         window.addEventListener('load', function() {
             const loader = document.getElementById('loader-overlay');
             if (loader) loader.style.display = 'none';
         });
+
+        let currentOffreId = null;
+
+        function ouvrirChat(idOffre, nomJoueur) {
+            currentOffreId = idOffre;
+            document.getElementById('chat-titre').textContent = nomJoueur;
+            document.getElementById('chat-widget').style.display = 'block';
+            chargerMessages();
+        }
+
+        function fermerChat() {
+            document.getElementById('chat-widget').style.display = 'none';
+            currentOffreId = null;
+        }
+
+        async function chargerMessages() {
+            if (!currentOffreId) return;
+            const res = await fetch(`/offre/${currentOffreId}/messages`);
+            const messages = await res.json();
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = messages.map(m => `
+                <div style="display:flex; flex-direction:column; align-items:${m.is_me ? 'flex-end' : 'flex-start'};">
+                    <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:2px;">${m.is_me ? 'Vous' : m.club}</div>
+                    <div style="background:${m.is_me ? 'var(--ocean-blue)' : 'white'}; color:${m.is_me ? 'white' : 'var(--text-dark)'}; padding:8px 12px; border-radius:${m.is_me ? '12px 12px 2px 12px' : '12px 12px 12px 2px'}; font-size:0.88rem; max-width:80%; box-shadow:0 1px 3px rgba(0,0,0,0.08);">${m.contenu}</div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function envoyerMessage() {
+            const input = document.getElementById('chat-input');
+            if (!input.value.trim() || !currentOffreId) return;
+            const form = new FormData();
+            form.append('contenu', input.value);
+            await fetch(`/offre/${currentOffreId}/messages`, { method: 'POST', body: form });
+            input.value = '';
+            chargerMessages();
+        }
+
+        setInterval(() => { if (currentOffreId) chargerMessages(); }, 5000);
     </script>
 </body>
 </html>

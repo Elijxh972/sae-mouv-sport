@@ -261,6 +261,40 @@ async def refuser_offre(request: Request, id_offre: int):
     conn.close()
     return RedirectResponse(url='/club', status_code=302)
 
+@app.get('/offre/{id_offre}/messages')
+async def get_messages(request: Request, id_offre: int):
+    if 'user_id' not in request.session:
+        return HTMLResponse('', status_code=401)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT m.contenu, c.nom_club, m.date_message,
+               CASE WHEN m.id_club_envoyeur = %s THEN true ELSE false END as is_me
+        FROM MESSAGE m
+        JOIN CLUB c ON m.id_club_envoyeur = c.id_club
+        WHERE m.id_offre = %s
+        ORDER BY m.date_message ASC
+    """, (request.session['id_club'], id_offre))
+    messages = cursor.fetchall()
+    conn.close()
+    from fastapi.responses import JSONResponse
+    return JSONResponse([{'contenu': m[0], 'club': m[1], 'date': str(m[2]), 'is_me': m[3]} for m in messages])
+
+@app.post('/offre/{id_offre}/messages')
+async def envoyer_message(request: Request, id_offre: int, contenu: str = Form(...)):
+    if 'user_id' not in request.session:
+        return HTMLResponse('', status_code=401)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO MESSAGE (id_offre, id_club_envoyeur, contenu) VALUES (%s, %s, %s)",
+        (id_offre, request.session['id_club'], contenu)
+    )
+    conn.commit()
+    conn.close()
+    from fastapi.responses import JSONResponse
+    return JSONResponse({'ok': True})
+
 @app.get('/update_db')
 async def update_db():
     conn = get_db_connection()
