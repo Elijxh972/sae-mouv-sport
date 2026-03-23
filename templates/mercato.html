@@ -5,94 +5,97 @@
     <title>Mercato - Mouv'Sport</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <style>
+        .filter-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; border-top: 4px solid var(--ocean-blue); }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: flex-end; }
+        .filter-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
+        .filter-input { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9rem; }
+    </style>
 </head>
 <body>
-    <div id="loader-overlay" class="loader-overlay">
-            <video autoplay loop muted playsinline class="loader-video">
-                <source src="{{ url_for('static', path='video/loader.mp4') }}" type="video/mp4">
-            </video>
-    </div>
     <header class="navbar">
         <div class="brand-link">
             <a href="/" style="text-decoration:none; color:white;">
                 <h1>Mouv'Sport <span style="font-size:0.7em; opacity:0.8; font-weight:normal;">| Mercato</span></h1>
             </a>
         </div>
-        <div>
-            <a href="/club" class="btn btn-secondary" style="background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.3);">
-                ← Retour au Club
-            </a>
-        </div>
+        <a href="/club" class="btn btn-secondary">← Retour</a>
     </header>
 
     <main class="container">
-
         <div class="section-header">
             <h2>Marché des Transferts</h2>
-            <p>Recrutez les meilleurs talents de la ligue pour renforcer votre effectif.</p>
+            <p>Filtrez les joueurs par poste, nom ou âge pour trouver la recrue idéale.</p>
         </div>
 
-        <div class="card" style="background: #f8f9fa; border-left: 5px solid var(--spicy-orange); display: flex; gap: 15px; align-items: center;">
-            <div style="font-size: 1.5rem;">🕵️‍♂️</div>
-            <div>
-                <h3 style="color: var(--text-dark); margin: 0; font-size: 1.1rem;">Zone de Recrutement</h3>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-grey);">
-                    Consultez la liste des joueurs libres ou sous contrat. Cliquez sur "Faire une offre" pour négocier.
-                </p>
-            </div>
-        </div>
+        <section class="filter-card">
+            <form method="get" action="/mercato" class="filter-grid">
+                <div class="filter-group">
+                    <label>Rechercher</label>
+                    <input type="text" name="search" class="filter-input" placeholder="Nom..." value="{{ search or '' }}">
+                </div>
+
+                <div class="filter-group">
+                    <label>Poste</label>
+                    <select name="poste" class="filter-input">
+                        <option value="Tous">Tous</option>
+                        {% for p in postes_dispo %}
+                        <option value="{{ p }}" {% if poste_active == p %}selected{% endif %}>{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Âge (Min - Max)</label>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <input type="number" name="age_min" class="filter-input" placeholder="15" value="{{ age_min or 0 }}">
+                        <input type="number" name="age_max" class="filter-input" placeholder="40" value="{{ age_max or 99 }}">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-action" style="flex:1;">Filtrer</button>
+                    <a href="/mercato" class="btn btn-secondary" style="background:#eee; color:#666;">Reset</a>
+                </div>
+            </form>
+        </section>
 
         <div class="table-wrapper">
-            <div class="responsive-scroll">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Joueur</th>
-                            <th>Poste</th>
-                            <th>Club Actuel</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for j in joueurs %}
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div style="background: #e3f2fd; color: var(--ocean-blue); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                                        {{ j[1][0] }}{{ j[2][0] }} </div>
-                                    <div>
-                                        <div style="font-weight: bold; color: var(--ocean-blue);">{{ j[1] }} {{ j[2] }}</div>
-                                    </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Joueur</th>
+                        <th>Poste</th>
+                        <th>Club Actuel</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in joueurs %}
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="background: #e3f2fd; color: var(--ocean-blue); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                    {{ j[1][0] }}{{ j[2][0] }}
                                 </div>
-                            </td>
-                            
-                            <td>
-                                <span class="badge-info">{{ j[3] }}</span>
-                            </td>
-
-                            <td style="font-weight: 500; color: var(--text-grey);">
-                                {{ j[4] }}
-                            </td>
-
-                            <td>
-                                <a href="/faire_offre/{{ j[0] }}" class="btn btn-action" style="padding: 6px 15px; font-size: 0.85rem;">
-                                    Faire une offre
-                                </a>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="4" class="empty-state">
-                                Aucun joueur disponible sur le marché actuellement.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                <div>
+                                    <div style="font-weight: bold; color: var(--ocean-blue);">{{ j[1] }} {{ j[2] }}</div>
+                                    <div style="font-size: 0.75rem; color: #999;">{{ j[5] }} ans</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge-info">{{ j[3] or 'N/A' }}</span></td>
+                        <td>{{ j[4] }}</td>
+                        <td>
+                            <a href="/faire_offre/{{ j[0] }}" class="btn btn-action">Offre</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align:center; padding:30px;">Aucun joueur trouvé.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
     </main>
-
 </body>
 </html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'Modifier' if joueur else 'Ajouter' }} un joueur - Mouv'Sport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand"><a href="/" style="color:white; text-decoration:none;">Mouv'Sport</a></div>
+        <div style="display:flex; gap:12px; align-items:center;"><a href="/club/manage" class="btn btn-secondary">Retour</a></div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>{{ 'Modifier' if joueur else 'Ajouter' }} un joueur</h2>
+            <form method="POST" action="{{ action }}" style="display:flex; flex-direction:column; gap:12px; max-width:480px;">
+                <label>Nom<input type="text" name="nom" value="{{ joueur[1] if joueur else '' }}" required></label>
+                <label>Prénom<input type="text" name="prenom" value="{{ joueur[2] if joueur else '' }}"></label>
+                <label>Poste<input type="text" name="poste" value="{{ joueur[4] if joueur else '' }}"></label>
+                <label>Date de naissance (YYYY-MM-DD)<input type="date" name="date_naissance" value="{{ joueur[8] if joueur and joueur|length>8 else '' }}"></label>
+                <label>Niveau<select name="niveau">
+                    <option value="R1" {% if joueur and joueur|length>6 and joueur[6]=='R1' %}selected{% endif %}>R1</option>
+                    <option value="R2" {% if joueur and joueur|length>6 and joueur[6]=='R2' %}selected{% endif %}>R2</option>
+                    <option value="R3" {% if joueur and joueur|length>6 and joueur[6]=='R3' %}selected{% endif %}>R3</option>
+                    <option value="U19" {% if joueur and joueur|length>6 and joueur[6]=='U19' %}selected{% endif %}>U19</option>
+                </select></label>
+                <div style="display:flex; gap:12px;">
+                    <button type="submit" class="btn btn-action">{{ 'Enregistrer' if joueur else 'Ajouter' }}</button>
+                    <a href="/club/manage" class="btn btn-secondary">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

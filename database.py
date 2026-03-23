@@ -1,20 +1,20 @@
 import psycopg2
 import os
 
-# --- CONFIGURATION SUPABASE ---
-# Colle ton lien URI ici entre les guillemets.
-# Format : postgresql://user:password@host:port/database
-# Exemple : "postgresql://postgres.xzy:MonSuperMotDePasse@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
-
+# On récupère l'URL depuis les variables d'environnement Vercel (recommandé)
+# Sinon, on utilise ton URL Supabase par défaut.
 DATABASE_URL = os.environ.get('DATABASE_URL', "postgresql://postgres.uhrrdadeptehksxjneqf:x3jxhhDeqbhZVr3g@aws-1-us-east-1.pooler.supabase.com:6543/postgres")
 
 def get_db_connection():
     """
-    Établit une connexion sécurisée à la base de données Supabase (PostgreSQL).
+    Établit une connexion sécurisée à la base de données Supabase.
+    Ajout de connect_timeout pour éviter les blocages infinis sur Vercel.
     """
     try:
-        conn = psycopg2.connect(DATABASE_URL)
+        # On ajoute un timeout de 5 secondes pour ne pas laisser Vercel dans le vide
+        conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
         return conn
     except Exception as e:
-        print(f"❌ Erreur de connexion à Supabase : {e}")
+        # Important : Vercel affichera cela dans l'onglet "Logs"
+        print(f"Erreur de connexion à Supabase : {e}")
         return None

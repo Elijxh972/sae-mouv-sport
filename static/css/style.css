@@ -421,6 +421,61 @@ input:focus, select:focus {
     font-weight: 600;
 }
 
+/* Bouton Retour à l'accueil (Pages auth) */
+.btn-home {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    background: rgba(0, 78, 146, 0.1);
+    color: var(--ocean-blue);
+    border-radius: var(--radius-s);
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: var(--transition-fast);
+}
+
+.btn-home:hover {
+    background: rgba(0, 78, 146, 0.2);
+    transform: translateX(-4px);
+}
+
+/* Modal / popup succès */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.modal-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px 26px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.35);
+    text-align: center;
+}
+
+.modal-card h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.modal-card p {
+    margin: 6px 0;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
 /* --- 9. ANIMATIONS --- */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }

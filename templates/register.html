@@ -5,32 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - Mouv'Sport</title>
     <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="register-box">
+        <a href="/" class="btn-home">← Accueil</a>
         <h2>Créer un compte</h2>
-        <form method="POST">
-            <label for="login">Identifiant :</label>
-            <input type="text" name="login" placeholder="Ex : golden_fc" required>
+        
+        <form action="/register" method="POST">
+            <label>Identifiant :</label>
+            <input type="text" name="login" placeholder="Ex : pseudo123" required>
 
-            <label for="password">Mot de passe :</label>
+            <label>Mot de passe :</label>
             <input type="password" name="password" placeholder="Mot de passe" required>
 
-            <label for="role">Rôle :</label>
+            <label>Rôle :</label>
             <select name="role" required>
                 <option value="">Choisir un rôle</option>
                 <option value="RESP_CLUB">Responsable de club</option>
                 <option value="JOUEUR">Joueur licencié</option>
             </select>
 
-            <!-- Application dédiée au football : le sport est automatiquement "Football" côté serveur -->
+            <div class="form-section" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0;">
+                <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Informations Joueur (Requis pour Mercato) :</p>
+                
+                <label>Nom :</label>
+                <input type="text" name="nom" placeholder="Nom">
 
-            <label for="id_club">Club :</label>
+                <label>Prénom :</label>
+                <input type="text" name="prenom" placeholder="Prénom">
+
+                <label>Date de naissance :</label>
+                <input type="date" name="date_naissance">
+            </div>
+
+            <label>Club :</label>
             <select name="id_club" required>
-                <option value="">Sélectionner un club</option>
+                <option value="">Sélectionner votre club</option>
                 {% for c in clubs %}
                     <option value="{{ c[0] }}">{{ c[1] }}</option>
                 {% endfor %}
@@ -38,8 +49,9 @@
 
             <button type="submit" class="btn btn-register">S'inscrire</button>
         </form>
-        <div class="help-text">
-            Déjà un compte ? <a href="/login">Se connecter</a>
+        
+        <div class="help-text" style="text-align: center; margin-top: 15px;">
+            Déjà inscrit ? <a href="/login">Se connecter</a>
         </div>
     </div>
 </body>

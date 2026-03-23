@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gérer l'effectif - Mouv'Sport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand"><a href="/" style="color:white; text-decoration:none;">Mouv'Sport</a></div>
+        <div style="display:flex; gap:12px; align-items:center;"><a href="/club" class="btn btn-secondary">Retour</a></div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>Effectif de {{ club[1] }}</h2>
+            <p>Ajoute, modifie ou supprime des joueurs du club.</p>
+            <div style="margin-top:12px;">
+                <a href="/club/player/add" class="btn btn-action">+ Ajouter un joueur</a>
+            </div>
+        </div>
+
+        <div class="table-wrapper" style="margin-top:16px;">
+            <div class="responsive-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Poste</th>
+                            <th>Age</th>
+                            <th>Niveau</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for j in joueurs %}
+                        <tr>
+                            <td>{{ j[1] }}</td>
+                            <td>{{ j[2] }}</td>
+                            <td>{{ j[4] or '' }}</td>
+                            <td>{{ j[7] if j|length > 7 else '' }}</td>
+                            <td>{{ j[6] if j|length > 6 else 'Standard' }}</td>
+                            <td>
+                                <a href="/club/player/edit/{{ j[0] }}" class="btn btn-primary" style="padding:6px 8px; font-size:0.85rem;">Modifier</a>
+                                <a href="/club/player/delete/{{ j[0] }}" class="btn btn-refuser" style="padding:6px 8px; font-size:0.85rem; margin-left:8px;">Supprimer</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-state">Aucun joueur dans ton effectif.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

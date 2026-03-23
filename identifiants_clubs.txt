@@ -1,0 +1,66 @@
+====================================
+IDENTIFIANTS MOUV'SPORT - CLUBS
+====================================
+
+Format: Club | Login | Mot de passe
+
+--- RÉGION 1 (R1) ---
+RC Saint-Joseph | rc-saint-joseph | club123
+Club Franciscain | club-franciscain | club123
+Club Colonial | club-colonial | club123
+Golden Lion | golden-lion | club123
+AS Samaritaine | as-samaritaine | club123
+Club Péléen | club-péléen | club123
+AS Morne-des-Esses | as-morne-des-esses | club123
+Inter de Sainte-Anne | inter-de-sainte-anne | club123
+CO Trénelle | co-trénelle | club123
+Espoir (Sainte-Luce) | espoir-sainte-luce | club123
+Golden Star | golden-star | club123
+US Robert | us-robert | club123
+Émulation | émulation | club123
+Aiglon | aiglon | club123
+
+--- RÉGION 2 (R2) ---
+RC Rivière-Pilote | rc-rivière-pilote | club123
+CS Vauclinois | cs-vauclinois | club123
+New Club (Petit-Bourg) | new-club-petit-bourg | club123
+US Diamantinoise | us-diamantinoise | club123
+SC Lamentinois | sc-lamentinois | club123
+Éveil (Trois-Ilets) | éveil-trois-ilets | club123
+US Marinoise | us-marinoise | club123
+Stade Spiritain | stade-spiritain | club123
+Éclair (Rivière-Salée) | éclair-rivière-salée | club123
+Olympique (Marin) | olympique-marin | club123
+JS Eucalyptus (François) | js-eucalyptus-françois | club123
+FAM (Lamentin) | fam-lamentin | club123
+US Riveraine (Grand-Rivière) | us-riveraine-grand-rivière | club123
+Effort (Morne-Vert) | effort-morne-vert | club123
+Rapid Club (Lorient) | rapid-club-lorient | club123
+Essor Préchotin | essor-préchotin | club123
+Réveil Sportif (Gros-Morne) | réveil-sportif-gros-morne | club123
+CS Case-Pilote | cs-case-pilote | club123
+Réal Tartane | réal-tartane | club123
+Étendard (Bellefontaine) | étendard-bellefontaine | club123
+UJ Monnerot | uj-monnerot | club123
+Assaut (Saint-Pierre) | assaut-saint-pierre | club123
+Océanic (Lorrain) | océanic-lorrain | club123
+AC Vert-Pré | ac-vert-pré | club123
+
+--- RÉGION 3 (R3) ---
+La Gauloise (Trinité) | la-gauloise-trinité | club123
+RC Bokannal | rc-bokannal | club123
+ASCEF | ascef | club123
+Good Luck | good-luck | club123
+Étendard | étendard | club123
+JS Marigot | js-marigot | club123
+Silver Star | silver-star | club123
+UJ Redoute | uj-redoute | club123
+Solidarité | solidarité | club123
+Gri-Gri Pilotin | gri-gri-pilotin | club123
+Anses-d'Arlet FC | anses-darlet-fc | club123
+CS Belimois | cs-belimois | club123
+FEP Monésie | fep-monésie | club123
+ASPTT | asptt | club123
+
+===== ADMINISTRATEUR =====
+Admin | admin | admin123

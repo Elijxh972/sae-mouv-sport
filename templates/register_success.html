@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription réussie - Mouv'Sport</title>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="modal-backdrop">
+        <div class="modal-card">
+            <h2>Ton compte joueur a bien été créé</h2>
+            <p>
+                Tu viens de t’inscrire comme joueur de football sur Mouv'Sport.
+                <br>Ton club devra maintenant <strong>valider ta demande</strong> avant que tu puisses te connecter.
+            </p>
+            <p class="help-text">
+                Un responsable de ton club verra une notification dans son espace club
+                et pourra confirmer que tu fais bien partie de l’effectif.
+            </p>
+            <div class="modal-actions">
+                <a href="/"><button class="btn btn-secondary">Retour à l'accueil</button></a>
+                <a href="/login"><button class="btn btn-login">Aller à la connexion</button></a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+
