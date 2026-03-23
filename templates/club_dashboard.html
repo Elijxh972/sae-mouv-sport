@@ -31,10 +31,9 @@
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h3 style="margin:0; font-size:1rem;">Notifications</h3>
-                    {% if joueurs_en_attente or offres_recues %}
+                    {% if offres_recues %}
                         <p style="margin:4px 0; font-size:0.9rem;">
-                            {% if joueurs_en_attente %}🔔 <strong>{{ joueurs_en_attente|length }} nouveau(x) joueur(s)</strong> à valider.{% endif %}
-                            {% if offres_recues %} &nbsp;|&nbsp; 📨 <strong>{{ offres_recues|length }} offre(s) de transfert</strong> reçue(s).{% endif %}
+                            📨 <strong>{{ offres_recues|length }} offre(s) de transfert</strong> reçue(s).
                         </p>
                     {% else %}
                         <p style="margin:4px 0; font-size:0.9rem; opacity:0.8;">✅ Aucune notification.</p>
@@ -72,43 +71,6 @@
         </div>
         {% endif %}
 
-        {% if joueurs_en_attente %}
-        <div class="card" style="border-left: 5px solid var(--spicy-orange); margin-bottom: 30px;">
-            <h3 style="margin-top:0;">👥 Validation des nouveaux membres</h3>
-            <p style="font-size:0.85rem; color:var(--text-grey); margin-bottom: 15px;">
-                Vérifiez l'identité des joueurs avant de les intégrer officiellement à votre effectif numérique.
-            </p>
-            <div class="table-wrapper">
-                <div class="responsive-scroll">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Identifiant (Login)</th>
-                                <th>Sport</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in joueurs_en_attente %}
-                            <tr>
-                                <td><strong>{{ p[1] }}</strong></td>
-                                <td>Football</td>
-                                <td>
-                                    <a href="/club/validate_player/{{ p[0] }}/valider" class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px; margin-right:5px;">
-                                        Confirmer
-                                    </a>
-                                    <a href="/club/validate_player/{{ p[0] }}/refuser" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 12px;">
-                                        Ignorer
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
             <div>

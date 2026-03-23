@@ -74,27 +74,15 @@ async def register_get(request: Request):
     return templates.TemplateResponse(request, 'register.html', {'clubs': clubs})
 
 @app.post('/register')
-async def register_post(request: Request, login: str = Form(...), password: str = Form(...), 
-                        role: str = Form(...), id_club: int = Form(...), nom: str = Form(None), 
-                        prenom: str = Form(None), date_naissance: str = Form(None)):
+async def register_post(request: Request, login: str = Form(...), password: str = Form(...), id_club: int = Form(...)):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         mdp_hash = generate_password_hash(password)
-        
-        # 1. Insertion Utilisateur
         cursor.execute(
             "INSERT INTO UTILISATEUR (login, password, role, id_club, est_verifie) VALUES (%s, %s, %s, %s, %s)",
-            (login, mdp_hash, role.upper(), id_club, role.upper() != 'JOUEUR')
+            (login, mdp_hash, 'RESP_CLUB', id_club, True)
         )
-        
-        # 2. Si Joueur, insertion dans la table JOUEUR avec date_naissance
-        if role.upper() == 'JOUEUR':
-            cursor.execute(
-                "INSERT INTO JOUEUR (nom, prenom, date_naissance, id_club_actuel) VALUES (%s, %s, %s, %s)",
-                (nom, prenom, date_naissance, id_club)
-            )
-        
         conn.commit()
         conn.close()
         return RedirectResponse(url='/login', status_code=302)
@@ -203,9 +191,6 @@ async def club_dashboard(request: Request):
     """, (mon_club_id,))
     joueurs = cursor.fetchall()
 
-    cursor.execute("SELECT id_user, login FROM UTILISATEUR WHERE id_club = %s AND role = 'JOUEUR' AND est_verifie = FALSE", (mon_club_id,))
-    joueurs_en_attente = cursor.fetchall()
-
     offres_recues = []
     offres_envoyees = []
     try:
@@ -234,7 +219,6 @@ async def club_dashboard(request: Request):
     return templates.TemplateResponse(request, 'club_dashboard.html', {
         'club': club,
         'joueurs': joueurs,
-        'joueurs_en_attente': joueurs_en_attente,
         'offres_recues': offres_recues,
         'offres_envoyees': offres_envoyees
     })
