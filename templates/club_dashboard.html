@@ -192,6 +192,38 @@
 
     </main>
 
+    <!-- BOUTON FAB CHAT -->
+    <div id="chat-fab" onclick="toggleListeChats()" style="position:fixed; bottom:20px; right:20px; width:56px; height:56px; background:linear-gradient(135deg,var(--ocean-blue),var(--lagoon-teal)); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 15px rgba(0,78,146,0.4); z-index:9997; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+        <span style="font-size:1.4rem;">&#x1F4AC;</span>
+        {% if offres_recues or offres_envoyees %}
+        <div style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ (offres_recues|length) + (offres_envoyees|length) }}</div>
+        {% endif %}
+    </div>
+
+    <!-- LISTE DISCUSSIONS -->
+    <div id="chat-liste" style="display:none; position:fixed; bottom:86px; right:20px; width:280px; background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); z-index:9998; overflow:hidden;">
+        <div style="background:linear-gradient(90deg,#003366,#004e92); padding:12px 16px;">
+            <span style="color:white; font-weight:700; font-size:0.9rem;">&#x1F4AC; Discussions</span>
+        </div>
+        <div style="max-height:300px; overflow-y:auto;">
+            {% for o in offres_recues %}
+            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                <div style="background:#e3f2fd; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:var(--ocean-blue); flex-shrink:0;">{{ o[1][0] }}{{ o[2][0] }}</div>
+                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[1] }} {{ o[2] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[3] }} &middot; {{ o[4] }}&euro;</div></div>
+            </div>
+            {% endfor %}
+            {% for o in offres_envoyees %}
+            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                <div style="background:#e8f5e9; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#2e7d32; flex-shrink:0;">{{ o[1][0] }}{{ o[2][0] }}</div>
+                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[1] }} {{ o[2] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[3] }} &middot; {{ o[4] }}&euro;</div></div>
+            </div>
+            {% endfor %}
+            {% if not offres_recues and not offres_envoyees %}
+            <div style="padding:20px; text-align:center; color:var(--text-grey); font-size:0.85rem;">Aucune discussion en cours.</div>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- WIDGET CHAT FLOTTANT -->
     <div id="chat-widget" style="display:none; position:fixed; bottom:20px; right:20px; width:340px; background:white; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,0.2); z-index:9999; overflow:hidden; font-family:'Inter',sans-serif;">
         <div style="background:linear-gradient(90deg,#003366,#004e92); padding:14px 18px; display:flex; justify-content:space-between; align-items:center;">
@@ -216,9 +248,15 @@
 
         let currentOffreId = null;
 
+        function toggleListeChats() {
+            const liste = document.getElementById('chat-liste');
+            liste.style.display = liste.style.display === 'none' ? 'block' : 'none';
+        }
+
         function ouvrirChat(idOffre, nomJoueur) {
             currentOffreId = idOffre;
             document.getElementById('chat-titre').textContent = nomJoueur;
+            document.getElementById('chat-liste').style.display = 'none';
             document.getElementById('chat-widget').style.display = 'block';
             chargerMessages();
         }
