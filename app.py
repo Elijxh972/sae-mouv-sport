@@ -1,7 +1,7 @@
 import os
-from datetime import datetime
+import logging
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -161,7 +161,7 @@ async def faire_offre_post(request: Request, id_joueur: int, montant: int = Form
         )
     """)
     cursor.execute("SELECT id_club_actuel FROM JOUEUR WHERE id_joueur = %s", (id_joueur,))
-    id_club_vendeur = cursor.fetchone()[0]
+    cursor.fetchone()
     cursor.execute(
         "INSERT INTO OFFRE (id_joueur, id_club_acheteur, montant, type_mutation) VALUES (%s, %s, %s, %s)",
         (id_joueur, request.session['id_club'], montant, type_mutation)
@@ -212,8 +212,8 @@ async def club_dashboard(request: Request):
             ORDER BY o.date_offre DESC
         """, (mon_club_id,))
         offres_envoyees = cursor.fetchall()
-    except:
-        pass
+    except Exception as e:
+        logging.error('Erreur chargement offres: %s', e)
 
     conn.close()
     return templates.TemplateResponse(request, 'club_dashboard.html', {
@@ -226,7 +226,6 @@ async def club_dashboard(request: Request):
 @app.get('/club/badge')
 async def club_badge(request: Request):
     if 'user_id' not in request.session:
-        from fastapi.responses import JSONResponse
         return JSONResponse({'total': 0})
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -240,10 +239,10 @@ async def club_badge(request: Request):
         recues = cursor.fetchone()[0]
         cursor.execute("SELECT COUNT(*) FROM OFFRE WHERE id_club_acheteur = %s", (mon_club_id,))
         envoyees = cursor.fetchone()[0]
-    except:
+    except Exception as e:
+        logging.error('Erreur badge: %s', e)
         recues, envoyees = 0, 0
     conn.close()
-    from fastapi.responses import JSONResponse
     return JSONResponse({'total': recues + envoyees})
 
 @app.get('/offre/{id_offre}/accepter')
@@ -284,7 +283,6 @@ async def get_messages(request: Request, id_offre: int):
     """, (request.session['id_club'], id_offre))
     messages = cursor.fetchall()
     conn.close()
-    from fastapi.responses import JSONResponse
     return JSONResponse([{'contenu': m[0], 'club': m[1], 'date': str(m[2]), 'is_me': m[3]} for m in messages])
 
 @app.post('/offre/{id_offre}/messages')
@@ -299,7 +297,6 @@ async def envoyer_message(request: Request, id_offre: int, contenu: str = Form(.
     )
     conn.commit()
     conn.close()
-    from fastapi.responses import JSONResponse
     return JSONResponse({'ok': True})
 
 @app.get('/update_db')
