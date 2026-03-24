@@ -1,5 +1,8 @@
 import os
 import logging
+import secrets
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -63,6 +66,76 @@ async def login_post(request: Request, login: str = Form(...), password: str = F
         request.session['id_club'] = id_club
         return RedirectResponse(url='/club' if role == 'RESP_CLUB' else '/', status_code=302)
     return RedirectResponse(url='/login?erreur=Identifiants incorrects', status_code=302)
+
+@app.get('/forgot-password', response_class=HTMLResponse)
+async def forgot_password_get(request: Request):
+    return templates.TemplateResponse(request, 'forgot_password.html', {})
+
+@app.post('/forgot-password', response_class=HTMLResponse)
+async def forgot_password_post(request: Request, login: str = Form(...)):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_user, email FROM UTILISATEUR WHERE login = %s", (login,))
+    user = cursor.fetchone()
+
+    if not user or not user[1]:
+        conn.close()
+        return templates.TemplateResponse(request, 'forgot_password.html', {'erreur': 'Identifiant introuvable ou aucun email associé.'})
+
+    token = secrets.token_urlsafe(32)
+    cursor.execute("DELETE FROM RESET_TOKEN WHERE id_user = %s", (user[0],))
+    cursor.execute("INSERT INTO RESET_TOKEN (token, id_user) VALUES (%s, %s)", (token, user[0]))
+    conn.commit()
+    conn.close()
+
+    base_url = os.environ.get('BASE_URL', 'https://sae401-app.vercel.app')
+    lien = f"{base_url}/reset-password/{token}"
+    message = Mail(
+        from_email=os.environ.get('SENDGRID_FROM_EMAIL'),
+        to_emails=user[1],
+        subject="Réinitialisation de votre mot de passe Mouv'Sport",
+        html_content=f"""
+            <p>Bonjour,</p>
+            <p>Cliquez sur le lien ci-dessous pour réinitialiser votre mot de passe :</p>
+            <p><a href="{lien}">{lien}</a></p>
+            <p>Ce lien expire dans 1 heure.</p>
+        """
+    )
+    try:
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        sg.send(message)
+    except Exception as e:
+        logging.error('Erreur envoi email: %s', e)
+
+    return templates.TemplateResponse(request, 'forgot_password.html', {'succes': 'Un email de réinitialisation a été envoyé.'})
+
+@app.get('/reset-password/{token}', response_class=HTMLResponse)
+async def reset_password_get(request: Request, token: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_user FROM RESET_TOKEN WHERE token = %s AND expire_at > NOW()", (token,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return RedirectResponse(url='/login?erreur=Lien invalide ou expiré')
+    return templates.TemplateResponse(request, 'reset_password.html', {'token': token})
+
+@app.post('/reset-password/{token}')
+async def reset_password_post(request: Request, token: str, password: str = Form(...), confirm: str = Form(...)):
+    if password != confirm:
+        return templates.TemplateResponse(request, 'reset_password.html', {'token': token, 'erreur': 'Les mots de passe ne correspondent pas.'})
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_user FROM RESET_TOKEN WHERE token = %s AND expire_at > NOW()", (token,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return RedirectResponse(url='/login?erreur=Lien invalide ou expiré')
+    cursor.execute("UPDATE UTILISATEUR SET password = %s WHERE id_user = %s", (generate_password_hash(password), row[0]))
+    cursor.execute("DELETE FROM RESET_TOKEN WHERE token = %s", (token,))
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url='/login?succes=Mot de passe réinitialisé avec succès', status_code=302)
 
 @app.get('/register', response_class=HTMLResponse)
 async def register_get(request: Request):

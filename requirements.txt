@@ -6,3 +6,4 @@ starlette
 psycopg2-binary
 werkzeug
 itsdangerous
+sendgrid
