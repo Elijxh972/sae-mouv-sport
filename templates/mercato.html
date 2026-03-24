@@ -29,6 +29,9 @@
         </div>
 
         <section class="filter-card">
+            {% if succes %}
+            <div style="background:#f0fff4; color:#2e7d32; border:1px solid #c8e6c9; border-radius:8px; padding:10px 14px; font-size:0.88rem; margin-bottom:15px;">✅ {{ succes }}</div>
+            {% endif %}
             <form method="get" action="/mercato" class="filter-grid">
                 <div class="filter-group">
                     <label>Rechercher</label>

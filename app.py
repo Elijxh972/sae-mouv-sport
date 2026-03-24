@@ -42,8 +42,8 @@ async def accueil(request: Request):
     return templates.TemplateResponse(request, 'accueil.html', {'mutations': mutations})
 
 @app.get('/login', response_class=HTMLResponse)
-async def login_get(request: Request, erreur: str = None):
-    return templates.TemplateResponse(request, 'login.html', {'erreur': erreur})
+async def login_get(request: Request, erreur: str = None, succes: str = None):
+    return templates.TemplateResponse(request, 'login.html', {'erreur': erreur, 'succes': succes})
 
 @app.post('/login')
 async def login_post(request: Request, login: str = Form(...), password: str = Form(...)):
@@ -85,14 +85,14 @@ async def register_post(request: Request, login: str = Form(...), password: str 
         )
         conn.commit()
         conn.close()
-        return RedirectResponse(url='/login', status_code=302)
+        return RedirectResponse(url='/login?succes=Compte créé avec succès', status_code=302)
     except Exception as e:
         return HTMLResponse(f"Erreur inscription : {str(e)}")
 
 # --- MERCATO ---
 
 @app.get('/mercato', response_class=HTMLResponse)
-async def mercato(request: Request, search: str = None, poste: str = 'Tous', age_min: int = 0, age_max: int = 99):
+async def mercato(request: Request, search: str = None, poste: str = 'Tous', age_min: int = 0, age_max: int = 99, succes: str = None):
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -127,7 +127,8 @@ async def mercato(request: Request, search: str = None, poste: str = 'Tous', age
         'search': search,
         'poste_active': poste,
         'age_min': age_min,
-        'age_max': age_max
+        'age_max': age_max,
+        'succes': succes
     })
 
 # --- OFFRES ---
@@ -149,26 +150,13 @@ async def faire_offre_post(request: Request, id_joueur: int, montant: int = Form
         return RedirectResponse(url='/login')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS OFFRE (
-            id_offre SERIAL PRIMARY KEY,
-            id_joueur INT,
-            id_club_acheteur INT,
-            montant INT,
-            type_mutation TEXT,
-            statut TEXT DEFAULT 'en_attente',
-            date_offre TIMESTAMP DEFAULT NOW()
-        )
-    """)
-    cursor.execute("SELECT id_club_actuel FROM JOUEUR WHERE id_joueur = %s", (id_joueur,))
-    cursor.fetchone()
     cursor.execute(
         "INSERT INTO OFFRE (id_joueur, id_club_acheteur, montant, type_mutation) VALUES (%s, %s, %s, %s)",
         (id_joueur, request.session['id_club'], montant, type_mutation)
     )
     conn.commit()
     conn.close()
-    return RedirectResponse(url='/mercato', status_code=302)
+    return RedirectResponse(url='/mercato?succes=Offre envoyée avec succès', status_code=302)
 
 # --- ESPACE CLUB (CORRIGÉ) ---
 
@@ -251,7 +239,12 @@ async def accepter_offre(request: Request, id_offre: int):
         return RedirectResponse(url='/login')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE OFFRE SET statut = 'acceptee' WHERE id_offre = %s", (id_offre,))
+    cursor.execute("""
+        UPDATE OFFRE SET statut = 'acceptee'
+        WHERE id_offre = %s AND id_joueur IN (
+            SELECT id_joueur FROM JOUEUR WHERE id_club_actuel = %s
+        )
+    """, (id_offre, request.session['id_club']))
     conn.commit()
     conn.close()
     return RedirectResponse(url='/club', status_code=302)
@@ -262,7 +255,12 @@ async def refuser_offre(request: Request, id_offre: int):
         return RedirectResponse(url='/login')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE OFFRE SET statut = 'refusee' WHERE id_offre = %s", (id_offre,))
+    cursor.execute("""
+        UPDATE OFFRE SET statut = 'refusee'
+        WHERE id_offre = %s AND id_joueur IN (
+            SELECT id_joueur FROM JOUEUR WHERE id_club_actuel = %s
+        )
+    """, (id_offre, request.session['id_club']))
     conn.commit()
     conn.close()
     return RedirectResponse(url='/club', status_code=302)
@@ -299,16 +297,7 @@ async def envoyer_message(request: Request, id_offre: int, contenu: str = Form(.
     conn.close()
     return JSONResponse({'ok': True})
 
-@app.get('/update_db')
-async def update_db():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("ALTER TABLE JOUEUR ADD COLUMN IF NOT EXISTS date_naissance DATE")
-    cursor.execute("ALTER TABLE JOUEUR ADD COLUMN IF NOT EXISTS poste TEXT")
-    cursor.execute("ALTER TABLE UTILISATEUR ADD COLUMN IF NOT EXISTS est_verifie BOOLEAN DEFAULT TRUE")
-    conn.commit()
-    conn.close()
-    return "Base de données à jour."
+
 
 @app.get('/logout')
 async def logout(request: Request):
