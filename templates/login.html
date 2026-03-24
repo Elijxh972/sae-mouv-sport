@@ -17,6 +17,10 @@
         
         <form action="/login" method="POST">
             
+            {% if erreur %}
+            <div style="background:#fff0f0; color:#c62828; border:1px solid #ffcdd2; border-radius:8px; padding:10px 14px; font-size:0.88rem;">❌ {{ erreur }}</div>
+            {% endif %}
+
             <label for="login">Identifiant :</label>
             <input type="text" name="login" placeholder="Ex: admin" required>
 
@@ -27,9 +31,6 @@
         </form>
 
         <div class="help-text">
-            <p>Comptes de test :<br>
-            Admin : <b>admin / admin123</b><br>
-            Club : <b>golden / club123</b></p>
             <p>Pas encore inscrit ? <a href="/register">Créer un compte</a></p>
         </div>
     </div>

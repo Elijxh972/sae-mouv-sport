@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = FastAPI()
 
 # Configuration Sécurité & Sessions
-app.add_middleware(SessionMiddleware, secret_key='MA_CLE_SECRETE_SAE')
+app.add_middleware(SessionMiddleware, secret_key=os.environ.get('SECRET_KEY', 'fallback_dev_key'))
 
 # Fichiers Statiques & Templates
 static_dir = os.path.join(BASE_DIR, "static")
@@ -42,8 +42,8 @@ async def accueil(request: Request):
     return templates.TemplateResponse(request, 'accueil.html', {'mutations': mutations})
 
 @app.get('/login', response_class=HTMLResponse)
-async def login_get(request: Request):
-    return templates.TemplateResponse(request, 'login.html')
+async def login_get(request: Request, erreur: str = None):
+    return templates.TemplateResponse(request, 'login.html', {'erreur': erreur})
 
 @app.post('/login')
 async def login_post(request: Request, login: str = Form(...), password: str = Form(...)):
@@ -62,7 +62,7 @@ async def login_post(request: Request, login: str = Form(...), password: str = F
         request.session['role'] = role
         request.session['id_club'] = id_club
         return RedirectResponse(url='/club' if role == 'RESP_CLUB' else '/', status_code=302)
-    return HTMLResponse("Identifiants incorrects. <a href='/login'>Réessayer</a>")
+    return RedirectResponse(url='/login?erreur=Identifiants incorrects', status_code=302)
 
 @app.get('/register', response_class=HTMLResponse)
 async def register_get(request: Request):
