@@ -5,6 +5,7 @@
     <title>Espace Club - Mouv'Sport</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', path='img/logo.png') }}" type="image/png">
 </head>
 <body>
     <div id="loader-overlay" class="loader-overlay">
@@ -118,7 +119,7 @@
                 <h2 style="margin:0;">Mon Effectif</h2>
                 <p style="margin:0; font-size:0.9rem;">Liste des joueurs actuellement sous contrat avec le club.</p>
             </div>
-            <a href="/mercato" class="btn btn-action">🛒 Aller au Mercato</a>
+            <a href="/mercato" class="btn btn-action">Aller au Mercato</a>
         </div>
 
         {% if offres_envoyees %}
@@ -323,5 +324,6 @@
         }
         setInterval(actualiserBadge, 5000);
     </script>
+    <script src="{{ url_for('static', path='js/transitions.js') }}"></script>
 </body>
 </html>
