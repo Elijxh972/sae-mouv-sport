@@ -28,8 +28,9 @@ if _is_production() and (not _secret_key or _secret_key == "fallback_dev_key"):
         "SECRET_KEY doit être défini en production (variable d'environnement, chaîne longue et aléatoire)."
     )
 if not _secret_key:
-    _secret_key = "fallback_dev_key"
-    logging.warning("SECRET_KEY non défini : utilisation d'une clé de développement (à ne jamais utiliser en production).")
+    import secrets as _s
+    _secret_key = _s.token_hex(32)
+    logging.warning("SECRET_KEY non défini : clé temporaire générée (sessions non persistantes en dev).")
 
 app = FastAPI()
 
@@ -111,8 +112,8 @@ async def login_post(request: Request, login: str = Form(...), password: str = F
     
     if user and check_password_hash(user[1], password):
         user_id, _, role, id_club, est_verifie = user
-        if role == 'JOUEUR' and not est_verifie:
-            return HTMLResponse("Compte en attente de validation par le club.")
+        if not est_verifie:
+            return RedirectResponse(url='/login?erreur=Compte non confirmé. Vérifiez votre email (pensez aux spams).', status_code=302)
         
         request.session['user_id'] = user_id
         request.session['role'] = role
@@ -164,7 +165,7 @@ async def forgot_password_post(request: Request, login: str = Form(...)):
     except Exception as e:
         logging.error('Erreur envoi email: %s', e)
 
-    return templates.TemplateResponse(request, 'forgot_password.html', {'succes': 'Un email de réinitialisation a été envoyé.'})
+    return templates.TemplateResponse(request, 'forgot_password.html', {'succes': 'Un email de réinitialisation a été envoyé. Pensez à vérifier vos spams.'})
 
 @app.get('/reset-password/{token}', response_class=HTMLResponse)
 async def reset_password_get(request: Request, token: str):
@@ -204,24 +205,64 @@ async def register_get(request: Request):
     return templates.TemplateResponse(request, 'register.html', {'clubs': clubs})
 
 @app.post('/register')
-async def register_post(request: Request, login: str = Form(...), password: str = Form(...), id_club: int = Form(...)):
+async def register_post(request: Request, login: str = Form(...), password: str = Form(...), email: str = Form(...), id_club: int = Form(...)):
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         mdp_hash = generate_password_hash(password)
         cursor.execute(
-            "INSERT INTO UTILISATEUR (login, password, role, id_club, est_verifie) VALUES (%s, %s, %s, %s, %s)",
-            (login, mdp_hash, 'RESP_CLUB', id_club, True)
+            "INSERT INTO UTILISATEUR (login, password, role, id_club, est_verifie, email) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id_user",
+            (login, mdp_hash, 'RESP_CLUB', id_club, False, email)
         )
+        id_user = cursor.fetchone()[0]
+        token = secrets.token_urlsafe(32)
+        cursor.execute("INSERT INTO CONFIRM_TOKEN (token, id_user) VALUES (%s, %s)", (token, id_user))
         conn.commit()
         conn.close()
-        return RedirectResponse(url='/login?succes=Compte créé avec succès', status_code=302)
+
+        base_url = os.environ.get('BASE_URL', 'https://mouvsportapp.vercel.app')
+        lien = f"{base_url}/confirm/{token}"
+        message = Mail(
+            from_email=os.environ.get('SENDGRID_FROM_EMAIL'),
+            to_emails=email,
+            subject="Confirmez votre inscription sur Mouv'Sport",
+            html_content=f"""
+                <p>Bonjour,</p>
+                <p>Merci de vous être inscrit sur Mouv'Sport.</p>
+                <p>Cliquez sur le lien ci-dessous pour confirmer votre compte :</p>
+                <p><a href="{lien}">{lien}</a></p>
+                <p>Ce lien expire dans 24 heures.</p>
+                <p><small>Si vous n'avez pas créé de compte, ignorez cet email.</small></p>
+            """
+        )
+        try:
+            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            sg.send(message)
+        except Exception as e:
+            logging.error('Erreur envoi email confirmation: %s', e)
+
+        return RedirectResponse(url='/login?succes=Compte créé ! Vérifiez votre email pour confirmer votre inscription (pensez aux spams).', status_code=302)
     except Exception as e:
         logging.exception("Inscription: %s", e)
         return HTMLResponse(
             "Impossible de créer le compte. Vérifiez vos informations ou contactez un administrateur.",
             status_code=400,
         )
+
+@app.get('/confirm/{token}')
+async def confirm_account(token: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_user FROM CONFIRM_TOKEN WHERE token = %s AND expire_at > NOW()", (token,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return RedirectResponse(url='/login?erreur=Lien de confirmation invalide ou expiré')
+    cursor.execute("UPDATE UTILISATEUR SET est_verifie = TRUE WHERE id_user = %s", (row[0],))
+    cursor.execute("DELETE FROM CONFIRM_TOKEN WHERE token = %s", (token,))
+    conn.commit()
+    conn.close()
+    return RedirectResponse(url='/login?succes=Compte confirmé ! Vous pouvez vous connecter.', status_code=302)
 
 # --- MERCATO ---
 
