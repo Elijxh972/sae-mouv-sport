@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfert en cours — Mouv'Sport</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <a href="/" class="brand-link" style="display:flex; align-items:center;">
+                <img src="{{ url_for('static', path='img/logo.png') }}" alt="Logo Mouv'Sport" class="logo-img">
+                <h1>Mouv'Sport</h1>
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="/club"><button class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.85rem;">Mon espace club</button></a>
+        </div>
+    </header>
+
+    <main class="container" style="max-width: 640px;">
+        <div class="card" style="border-left: 5px solid var(--ocean-blue); padding: 28px 32px; margin-top: 20px;">
+            <div style="font-size: 2.5rem; margin-bottom: 12px;" aria-hidden="true">⏳</div>
+            <h2 style="margin: 0 0 12px 0; font-size: 1.45rem;">Accord enregistré — validation ligue en cours</h2>
+            <p style="color: var(--text-grey); font-size: 1rem; line-height: 1.65; margin-bottom: 20px;">
+                Vous avez accepté le transfert de <strong>{{ joueur_prenom }} {{ joueur_nom }}</strong>
+                vers <strong>{{ club_acheteur }}</strong> ({{ montant }}&nbsp;€, {{ type_mutation }}).
+            </p>
+            <p style="color: var(--text-dark); font-size: 0.98rem; line-height: 1.65; margin-bottom: 0;">
+                Le joueur reste sous contrat avec votre club tant que la <strong>ligue</strong> n’a pas validé le dossier de façon définitive.
+                Vous serez notifié via votre espace lorsque le transfert sera officialisé.
+            </p>
+        </div>
+
+        <div class="card" style="background: linear-gradient(135deg, rgba(0,78,146,0.06), rgba(0,180,219,0.08)); border: 1px solid rgba(0,78,146,0.12); padding: 20px 24px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 1rem; color: var(--ocean-blue);">Prochaine étape</h3>
+            <ul style="margin: 0; padding-left: 1.2rem; color: var(--text-grey); font-size: 0.92rem; line-height: 1.7;">
+                <li>Examen du dossier par l’administration de la ligue</li>
+                <li>Validation ou refus depuis l’espace administrateur</li>
+                <li>Mise à jour automatique de l’effectif des clubs concernés après validation</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+            <a href="/club" class="btn btn-action">Retour à mon espace club</a>
+            <a href="/" class="btn btn-secondary">Accueil public</a>
+        </div>
+    </main>
+</body>
+</html>

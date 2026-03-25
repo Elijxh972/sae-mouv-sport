@@ -32,9 +32,15 @@
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <h3 style="margin:0; font-size:1rem;">Notifications</h3>
-                    {% if offres_recues %}
+                    {% if offres_recues or offres_attente_ligue %}
                         <p style="margin:4px 0; font-size:0.9rem;">
-                            📨 <strong>{{ offres_recues|length }} offre(s) de transfert</strong> reçue(s).
+                            {% if offres_recues %}
+                            📨 <strong>{{ offres_recues|length }} offre(s)</strong> à traiter.
+                            {% endif %}
+                            {% if offres_attente_ligue %}
+                            {% if offres_recues %}<br>{% endif %}
+                            ⏳ <strong>{{ offres_attente_ligue|length }} transfert(s)</strong> en attente de validation ligue.
+                            {% endif %}
                         </p>
                     {% else %}
                         <p style="margin:4px 0; font-size:0.9rem; opacity:0.8;">✅ Aucune notification.</p>
@@ -50,7 +56,7 @@
             <div class="table-wrapper"><div class="responsive-scroll">
                 <table>
                     <thead>
-                        <tr><th>Joueur</th><th>Club acheteur</th><th>Montant</th><th>Type</th></tr>
+                        <tr><th>Joueur</th><th>Club acheteur</th><th>Montant</th><th>Type</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         {% for o in offres_recues %}
@@ -59,10 +65,44 @@
                             <td>{{ o[3] }}</td>
                             <td>{{ o[4] }} €</td>
                             <td>{{ o[5] }}</td>
-                            <td style="display:flex; gap:6px;">
-                                <a href="/offre/{{ o[0] }}/accepter" class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;">✅ Accepter</a>
-                                <a href="/offre/{{ o[0] }}/refuser" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 12px;">❌ Refuser</a>
-                                <button onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">💬 Discussion</button>
+                            <td style="display:flex; flex-wrap:wrap; gap:6px;">
+                                <form method="post" action="/offre/{{ o[0] }}/accepter" style="display:inline;">
+                                    <button type="submit" class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;">✅ Accepter</button>
+                                </form>
+                                <form method="post" action="/offre/{{ o[0] }}/refuser" style="display:inline;" onsubmit="return confirm('Refuser cette offre ?');">
+                                    <button type="submit" class="btn btn-refuser" style="font-size:0.8rem; padding:6px 12px;">❌ Refuser</button>
+                                </form>
+                                <button type="button" onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px;">💬 Discussion</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div></div>
+        </div>
+        {% endif %}
+
+        {% if offres_attente_ligue %}
+        <div class="card" style="border-left: 5px solid #c2410c; margin-bottom: 30px;">
+            <h3 style="margin-top:0;">⏳ Transferts acceptés — validation ligue</h3>
+            <p style="margin: 0 0 16px 0; font-size: 0.9rem; color: var(--text-grey);">
+                Ces dossiers ont été acceptés de votre côté. Le joueur reste à votre club jusqu’à la validation définitive par la ligue.
+            </p>
+            <div class="table-wrapper"><div class="responsive-scroll">
+                <table>
+                    <thead>
+                        <tr><th>Joueur</th><th>Club acheteur</th><th>Montant</th><th>Type</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for o in offres_attente_ligue %}
+                        <tr>
+                            <td><strong>{{ o[1] }} {{ o[2] }}</strong></td>
+                            <td>{{ o[3] }}</td>
+                            <td>{{ o[4] }} €</td>
+                            <td>{{ o[5] }}</td>
+                            <td>
+                                <span class="badge-warning">En attente ligue</span>
+                                <button onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" class="btn btn-secondary" style="font-size:0.8rem; padding:6px 12px; margin-left:6px;">💬 Discussion</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -98,11 +138,17 @@
                             <td>{{ o[5] }}</td>
                             <td>
                                 {% if o[6] == 'en_attente' %}
-                                    <span class="badge-info">⏳ En attente</span>
+                                    <span class="badge-info">⏳ En attente du club</span>
                                 {% elif o[6] == 'acceptee' %}
-                                    <span class="badge-success">✅ Acceptée</span>
-                                {% else %}
+                                    <span class="badge-warning">⏳ Validation ligue</span>
+                                {% elif o[6] == 'validee' %}
+                                    <span class="badge-success">✅ Transfert officialisé</span>
+                                {% elif o[6] == 'refusee_ligue' %}
+                                    <span class="badge-danger">Refus ligue</span>
+                                {% elif o[6] == 'refusee' %}
                                     <span class="badge-danger">❌ Refusée</span>
+                                {% else %}
+                                    <span class="badge-info">{{ o[6] }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -158,8 +204,8 @@
     <!-- BOUTON FAB CHAT -->
     <div id="chat-fab" onclick="toggleListeChats()" style="position:fixed; bottom:20px; right:20px; width:56px; height:56px; background:linear-gradient(135deg,var(--ocean-blue),var(--lagoon-teal)); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 15px rgba(0,78,146,0.4); z-index:9997; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
         <span style="font-size:1.4rem;">&#x1F4AC;</span>
-        {% if offres_recues or offres_envoyees %}
-        <div id="chat-badge" style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ (offres_recues|length) + (offres_envoyees|length) }}</div>
+        {% if offres_recues or offres_attente_ligue or offres_envoyees %}
+        <div id="chat-badge" style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ (offres_recues|length) + (offres_attente_ligue|length) + (offres_envoyees|length) }}</div>
         {% else %}
         <div id="chat-badge" style="position:absolute; top:-4px; right:-4px; background:var(--spicy-orange); color:white; border-radius:50%; width:20px; height:20px; font-size:0.7rem; font-weight:700; display:none; align-items:center; justify-content:center;"></div>
         {% endif %}
@@ -177,13 +223,19 @@
                 <div><div style="font-weight:600; font-size:0.85rem;">{{ o[3] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[1] }} {{ o[2] }} &middot; {{ o[4] }}&euro;</div></div>
             </div>
             {% endfor %}
+            {% for o in offres_attente_ligue %}
+            <div onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
+                <div style="background:#fff7ed; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#c2410c; flex-shrink:0;">{{ o[1][0] }}{{ o[2][0] }}</div>
+                <div><div style="font-weight:600; font-size:0.85rem;">{{ o[3] }} <span style="font-size:0.7rem; color:#c2410c;">(ligue)</span></div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[1] }} {{ o[2] }} &middot; {{ o[4] }}&euro;</div></div>
+            </div>
+            {% endfor %}
             {% for o in offres_envoyees %}
             <div onclick="ouvrirChat({{ o[0] }}, '{{ o[3] }}', '{{ o[1] }} {{ o[2] }}')" style="padding:12px 16px; cursor:pointer; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px; background:white;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                 <div style="background:#e8f5e9; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#2e7d32; flex-shrink:0;">{{ o[1][0] }}{{ o[2][0] }}</div>
                 <div><div style="font-weight:600; font-size:0.85rem;">{{ o[3] }}</div><div style="font-size:0.75rem; color:var(--text-grey);">{{ o[1] }} {{ o[2] }} &middot; {{ o[4] }}&euro;</div></div>
             </div>
             {% endfor %}
-            {% if not offres_recues and not offres_envoyees %}
+            {% if not offres_recues and not offres_attente_ligue and not offres_envoyees %}
             <div style="padding:20px; text-align:center; color:var(--text-grey); font-size:0.85rem;">Aucune discussion en cours.</div>
             {% endif %}
         </div>

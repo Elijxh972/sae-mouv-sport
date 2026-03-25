@@ -26,7 +26,7 @@
     <main class="container">
         <div class="section-header">
             <h2>Marché des Transferts</h2>
-            <p>Filtrez les joueurs par poste, nom ou âge pour trouver la recrue idéale.</p>
+            <p>Filtrez par nom, poste, âge ou club actuel du joueur.</p>
         </div>
 
         <section class="filter-card">
@@ -45,6 +45,16 @@
                         <option value="Tous">Tous</option>
                         {% for p in postes_dispo %}
                         <option value="{{ p }}" {% if poste_active == p %}selected{% endif %}>{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Club actuel</label>
+                    <select name="id_club" class="filter-input">
+                        <option value="">Tous les clubs</option>
+                        {% for cl in clubs_list %}
+                        <option value="{{ cl[0] }}" {% if id_club_filtre is not none and id_club_filtre == cl[0] %}selected{% endif %}>{{ cl[1] }}</option>
                         {% endfor %}
                     </select>
                 </div>

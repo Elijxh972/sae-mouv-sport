@@ -1,3 +1,4 @@
+{% from 'macros/auth_fields.html' import password_with_toggle %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -16,8 +17,8 @@
             <label>Identifiant :</label>
             <input type="text" name="login" placeholder="Ex : pseudo123" required>
 
-            <label>Mot de passe :</label>
-            <input type="password" name="password" placeholder="Mot de passe" required>
+            <label for="password">Mot de passe :</label>
+            {{ password_with_toggle('password', 'Mot de passe', 'password', true) }}
 
             <label>Club :</label>
             <select name="id_club" required>
@@ -34,5 +35,6 @@
             Déjà inscrit ? <a href="/login">Se connecter</a>
         </div>
     </div>
+    <script src="{{ url_for('static', path='js/password-toggle.js') }}"></script>
 </body>
 </html>

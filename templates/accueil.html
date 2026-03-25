@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="layout-page-accueil">
 
     <header class="navbar">
         <div class="brand">
@@ -21,12 +21,18 @@
                 <h1>Mouv'Sport</h1>
             </a>
         </div>
-        <div class="auth-buttons">
-            <a href="/login"><button class="btn btn-login">Connexion</button></a>
-            <a href="/register"><button class="btn btn-register">Créer un compte</button></a>
+        <div class="navbar-actions">
+            <button type="button" class="btn btn-info-public" id="btn-public-info" aria-haspopup="dialog" aria-controls="public-info-dialog" aria-expanded="false">
+                Infos visiteurs
+            </button>
+            <div class="auth-buttons">
+                <a href="/login"><button class="btn btn-login">Connexion</button></a>
+                <a href="/register"><button class="btn btn-register">Créer un compte</button></a>
+            </div>
         </div>
     </header>
 
+    <div class="page-shell">
     <main class="container">
         
         <div class="section-header">
@@ -42,6 +48,8 @@
                             <th>Joueur</th>
                             <th>Club Départ</th>
                             <th>Club Arrivée</th>
+                            <th>Date</th>
+                            <th>Montant</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,10 +66,16 @@
                             <td style="font-weight: 600;">
                                 <span style="color: var(--nature-green);">➔</span> {{ m[3] }}
                             </td>
+                            <td style="font-size: 0.92rem; color: var(--text-dark); white-space: nowrap;">
+                                {% if m[4] %}{{ m[4].strftime('%d/%m/%Y') }}{% else %}—{% endif %}
+                            </td>
+                            <td style="font-weight: 600; color: var(--ocean-blue); white-space: nowrap;">
+                                {% if m[5] is not none %}{{ '%.0f'|format(m[5]|float) }} €{% else %}—{% endif %}
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="3" class="empty-state">
+                            <td colspan="5" class="empty-state">
                                 Aucun mouvement validé sur les 30 derniers jours.
                             </td>
                         </tr>
@@ -73,5 +87,65 @@
 
     </main>
 
+    <footer class="site-footer-public">
+        <p class="site-footer-credits">
+            <strong>Mouv'Sport</strong> — Projet réalisé par <strong>DELEPINE Elijah</strong> et <strong>CALIARI Nolane</strong>,
+            étudiants en <strong>BUT 2<sup>e</sup> année</strong>, créateurs de l'application.
+        </p>
+    </footer>
+    </div>
+
+    <div class="public-info-overlay" id="public-info-overlay" hidden aria-hidden="true">
+        <div class="public-info-dialog" role="dialog" aria-modal="true" aria-labelledby="public-info-title" id="public-info-dialog">
+            <button type="button" class="public-info-close" id="public-info-close" aria-label="Fermer">&times;</button>
+            <h3 id="public-info-title">Informations pour les visiteurs</h3>
+            <div class="public-info-body">
+                <p>
+                    L’espace <strong>connexion</strong> et <strong>création de compte</strong> est réservé aux
+                    <strong>responsables de club</strong> et aux <strong>administrateurs de la ligue</strong>.
+                    Si vous n’avez pas ce rôle, il n’est pas utile d’essayer de vous connecter&nbsp;: l’accès n’y est pas prévu pour les autres profils pour le moment.
+                </p>
+                <p>
+                    Des <strong>évolutions</strong> de l’application sont prévues prochainement, avec de <strong>nouvelles fonctionnalités</strong>
+                    pour les joueurs et le grand public. Patience&nbsp;: elles seront annoncées ici.
+                </p>
+                <p class="public-info-highlight">
+                    En attendant, tout le monde peut consulter librement le <strong>tableau des dernières transactions</strong> validées par la ligue (ci-dessus).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        var btn = document.getElementById('btn-public-info');
+        var overlay = document.getElementById('public-info-overlay');
+        var closeBtn = document.getElementById('public-info-close');
+        if (!btn || !overlay) return;
+
+        function openModal() {
+            overlay.hidden = false;
+            overlay.setAttribute('aria-hidden', 'false');
+            btn.setAttribute('aria-expanded', 'true');
+            document.body.style.overflow = 'hidden';
+            closeBtn && closeBtn.focus();
+        }
+        function closeModal() {
+            overlay.hidden = true;
+            overlay.setAttribute('aria-hidden', 'true');
+            btn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+            btn.focus();
+        }
+        btn.addEventListener('click', function (e) { e.preventDefault(); openModal(); });
+        closeBtn && closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) closeModal();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !overlay.hidden) closeModal();
+        });
+    })();
+    </script>
 </body>
 </html>
