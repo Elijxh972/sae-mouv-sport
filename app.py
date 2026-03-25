@@ -10,7 +10,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-from database import get_db_connection
+from database import get_db_connection, PG_TZ
 from werkzeug.security import generate_password_hash, check_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -90,9 +90,9 @@ async def accueil(request: Request):
             JOIN joueur j ON m.id_joueur = j.id_joueur
             JOIN club c1 ON m.id_club_depart = c1.id_club
             JOIN club c2 ON m.id_club_arrivee = c2.id_club
-            WHERE m.date_demande >= (CURRENT_DATE - INTERVAL '30 days')::date
+            WHERE m.date_demande >= ((now() AT TIME ZONE %s)::date - INTERVAL '30 days')
             ORDER BY m.date_demande DESC NULLS LAST
-        """)
+        """, (PG_TZ,))
         mutations = cursor.fetchall()
         conn.close()
     return templates.TemplateResponse(request, 'accueil.html', {'mutations': mutations})
@@ -609,9 +609,9 @@ async def admin_valider_transfert(request: Request, id_offre: int):
                 date_demande, statut, type_mutation, montant_transfert, montant_commission,
                 etat_paiement, id_joueur, id_club_depart, id_club_arrivee
             ) VALUES (
-                CURRENT_DATE, 'validee', %s, %s, %s, 'en_attente', %s, %s, %s
+                (now() AT TIME ZONE %s)::date, 'validee', %s, %s, %s, 'en_attente', %s, %s, %s
             )
-        """, (type_mutation, montant_offre or 0, montant_comm, id_joueur, id_club_depart, id_club_acheteur))
+        """, (PG_TZ, type_mutation, montant_offre or 0, montant_comm, id_joueur, id_club_depart, id_club_acheteur))
         conn.commit()
     except Exception as e:
         logging.exception('Validation transfert: %s', e)

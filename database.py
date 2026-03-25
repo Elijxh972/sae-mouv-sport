@@ -8,8 +8,10 @@ DATABASE_URL = os.environ.get(
     "postgresql://postgres.uhrrdadeptehksxjneqf:x3jxhhDeqbhZVr3g@aws-1-us-east-1.pooler.supabase.com:6543/postgres",
 )
 
-# Fuseau pour CURRENT_DATE / heures SQL (évite d’avoir « demain » en UTC alors qu’on est encore le jour J localement).
-# Ex. variable d’environnement : PG_TZ=Europe/Paris
+# Fuseau Martinique par défaut (dates affichées / enregistrées comme sur l’île).
+# Surcharge possible : PG_TZ=Europe/Paris
+# Les requêtes sensibles dans app.py utilisent (now() AT TIME ZONE PG_TZ) pour rester correctes
+# même avec le pooler Supabase (mode transaction) qui peut ignorer SET TIME ZONE.
 PG_TZ = os.environ.get("PG_TZ", "America/Martinique")
 
 
